@@ -16,6 +16,10 @@ const int BLACK_KING   = 12;
 const int WHITE  = 0;
 const int BLACK  = 1;
 
+__device__ __inline__ int clamp(long left, long right, long val) {
+    return max(left, min(right, val));
+}
+
 /*
 __global__ void step_kernel(
     torch::PackedTensorAccessor64<long , 2, torch::RestrictPtrTraits> boards,
@@ -145,90 +149,90 @@ __device__ long count_attacks(
     const short OPPONENT_KING   = ((players[env] + 1) % 2 * 6) + WHITE_KING;
 
     // if player is white count attacks by blacks pawns
-    attacks += (players[env] == WHITE) * (row > 0) * (col > 0) * (boards[env][(row > 0) * (col > 0) * ((row - 1) * 8 + col - 1)] == BLACK_PAWN);
-    attacks += (players[env] == WHITE) * (row > 0) * (col < 7) * (boards[env][(row > 0) * (col < 7) * ((row - 1) * 8 + col + 1)] == BLACK_PAWN);
+    attacks += (players[env] == WHITE) * (row > 0) * (col > 0) * (boards[env][clamp(0,63,(row - 1) * 8 + col - 1)] == BLACK_PAWN);
+    attacks += (players[env] == WHITE) * (row > 0) * (col < 7) * (boards[env][clamp(0,63,(row - 1) * 8 + col + 1)] == BLACK_PAWN);
 
     // if player is black count attacks by white pawns
-    attacks += (players[env] == BLACK) * (row < 7) * (col > 0) * (boards[env][(row < 7) * (col > 0) * ((row + 1) * 8 + col - 1)] == WHITE_PAWN);
-    attacks += (players[env] == BLACK) * (row < 7) * (col < 7) * (boards[env][(row < 7) * (col < 7) * ((row + 1) * 8 + col + 1)] == WHITE_PAWN);
+    attacks += (players[env] == BLACK) * (row < 7) * (col > 0) * (boards[env][clamp(0,63,(row + 1) * 8 + col - 1)] == WHITE_PAWN);
+    attacks += (players[env] == BLACK) * (row < 7) * (col < 7) * (boards[env][clamp(0,63,(row + 1) * 8 + col + 1)] == WHITE_PAWN);
     
     
     // count knight attacks
-    attacks += (row > 1) * (col > 0) * (boards[env][(row > 1) * (col > 0) * ((row - 2) * 8 + (col - 1))] == OPPONENT_KNIGHT);
-    attacks += (row > 1) * (col < 7) * (boards[env][(row > 1) * (col < 7) * ((row - 2) * 8 + (col + 1))] == OPPONENT_KNIGHT);
-    attacks += (row > 0) * (col > 1) * (boards[env][(row > 0) * (col > 1) * ((row - 1) * 8 + (col - 2))] == OPPONENT_KNIGHT);
-    attacks += (row > 0) * (col < 6) * (boards[env][(row > 0) * (col < 6) * ((row - 1) * 8 + (col + 2))] == OPPONENT_KNIGHT);
-    attacks += (row < 7) * (col > 1) * (boards[env][(row < 7) * (col > 1) * ((row + 1) * 8 + (col - 2))] == OPPONENT_KNIGHT);
-    attacks += (row < 7) * (col < 6) * (boards[env][(row < 7) * (col < 6) * ((row + 1) * 8 + (col + 2))] == OPPONENT_KNIGHT);
-    attacks += (row < 6) * (col > 0) * (boards[env][(row < 6) * (col > 0) * ((row + 2) * 8 + (col - 1))] == OPPONENT_KNIGHT);
-    attacks += (row < 6) * (col < 7) * (boards[env][(row < 6) * (col < 7) * ((row + 2) * 8 + (col + 1))] == OPPONENT_KNIGHT);
+    attacks += (row > 1) * (col > 0) * (boards[env][clamp(0,63,(row - 2) * 8 + (col - 1))] == OPPONENT_KNIGHT);
+    attacks += (row > 1) * (col < 7) * (boards[env][clamp(0,63,(row - 2) * 8 + (col + 1))] == OPPONENT_KNIGHT);
+    attacks += (row > 0) * (col > 1) * (boards[env][clamp(0,63,(row - 1) * 8 + (col - 2))] == OPPONENT_KNIGHT);
+    attacks += (row > 0) * (col < 6) * (boards[env][clamp(0,63,(row - 1) * 8 + (col + 2))] == OPPONENT_KNIGHT);
+    attacks += (row < 7) * (col > 1) * (boards[env][clamp(0,63,(row + 1) * 8 + (col - 2))] == OPPONENT_KNIGHT);
+    attacks += (row < 7) * (col < 6) * (boards[env][clamp(0,63,(row + 1) * 8 + (col + 2))] == OPPONENT_KNIGHT);
+    attacks += (row < 6) * (col > 0) * (boards[env][clamp(0,63,(row + 2) * 8 + (col - 1))] == OPPONENT_KNIGHT);
+    attacks += (row < 6) * (col < 7) * (boards[env][clamp(0,63,(row + 2) * 8 + (col + 1))] == OPPONENT_KNIGHT);
 
     
     // count king attacks
-    attacks += (row > 0) * (col > 0) * (boards[env][(row > 0) * (col > 0) * ((row - 1) * 8 + (col - 1))] == OPPONENT_KING);
-    attacks += (row > 0) * (col < 7) * (boards[env][(row > 0) * (col < 7) * ((row - 1) * 8 + (col + 1))] == OPPONENT_KING);
-    attacks += (row < 7) * (col > 0) * (boards[env][(row < 7) * (col > 0) * ((row + 1) * 8 + (col - 1))] == OPPONENT_KING);
-    attacks += (row < 7) * (col < 7) * (boards[env][(row < 7) * (col < 7) * ((row + 1) * 8 + (col + 1))] == OPPONENT_KING);
-    attacks += (row > 0) * (boards[env][(row > 0) * ((row - 1) * 8 + col)] == OPPONENT_KING);
-    attacks += (row < 7) * (boards[env][(row < 7) * ((row + 1) * 8 + col)] == OPPONENT_KING);
-    attacks += (col > 0) * (boards[env][(col > 0) * (row * 8 + (col - 1))] == OPPONENT_KING);
-    attacks += (col < 7) * (boards[env][(col < 7) * (row * 8 + (col + 1))] == OPPONENT_KING);
+    attacks += (row > 0) * (col > 0) * (boards[env][clamp(0,63,(row - 1) * 8 + (col - 1))] == OPPONENT_KING);
+    attacks += (row > 0) * (col < 7) * (boards[env][clamp(0,63,(row - 1) * 8 + (col + 1))] == OPPONENT_KING);
+    attacks += (row < 7) * (col > 0) * (boards[env][clamp(0,63,(row + 1) * 8 + (col - 1))] == OPPONENT_KING);
+    attacks += (row < 7) * (col < 7) * (boards[env][clamp(0,63,(row + 1) * 8 + (col + 1))] == OPPONENT_KING);
+    attacks += (row > 0) * (boards[env][clamp(0,63,(row - 1) * 8 + col)] == OPPONENT_KING);
+    attacks += (row < 7) * (boards[env][clamp(0,63,(row + 1) * 8 + col)] == OPPONENT_KING);
+    attacks += (col > 0) * (boards[env][clamp(0,63,row * 8 + (col - 1))] == OPPONENT_KING);
+    attacks += (col < 7) * (boards[env][clamp(0,63,row * 8 + (col + 1))] == OPPONENT_KING);
     
     
     // count bottom-right attacks
     bool covered = false;
-    for (int i = 1; i < 7; i++) {
-        attacks += (!covered) * (row + i < 8) * (col + i < 8) * (boards[env][(row + i < 8) * (col + i < 8) * ((row + i) * 8 + (col + i))] == OPPONENT_BISHOP || boards[env][(row + i < 8) * (col + i < 8) * ((row + i) * 8 + (col + i))] == OPPONENT_QUEEN);
-        covered = covered || (boards[env][(row + i < 8) * (col + i < 8) * ((row + i) * 8 + (col + i))] != EMPTY);
+    for (int i = 1; i < 8; i++) {
+        attacks += (!covered) * (row + i < 8) * (col + i < 8) * (boards[env][clamp(0,63,(row + i) * 8 + (col + i))] == OPPONENT_BISHOP || boards[env][clamp(0,63,(row + i) * 8 + (col + i))] == OPPONENT_QUEEN);
+        covered = covered || (boards[env][clamp(0,63,(row + i) * 8 + (col + i))] != EMPTY);
     }
     
     // count bottom-left attacks
     covered = false;
-    for (int i = 1; i < 7; i++) {
-        attacks += (!covered) * (row + i < 8) * (col - i >= 0) * (boards[env][(row + i < 8) * (col - i >= 0) * ((row + i) * 8 + (col - i))] == OPPONENT_BISHOP || boards[env][(row + i < 8) * (col - i >= 0) * ((row + i) * 8 + (col - i))] == OPPONENT_QUEEN);
-        covered = covered || (boards[env][(row + i < 8) * (col - i >= 0) * ((row + i) * 8 + (col - i))] != EMPTY);
+    for (int i = 1; i < 8; i++) {
+        attacks += (!covered) * (row + i < 8) * (col - i >= 0) * (boards[env][clamp(0,63,(row + i) * 8 + (col - i))] == OPPONENT_BISHOP || boards[env][clamp(0,63,(row + i) * 8 + (col - i))] == OPPONENT_QUEEN);
+        covered = covered || (boards[env][clamp(0,63,(row + i) * 8 + (col - i))] != EMPTY);
     }
-   //// 
+
     // count top-right attacks
     covered = false;
-    for (int i = 1; i < 7; i++) {
-        attacks += (!covered) * (row - i >= 0) * (col + i < 8) * (boards[env][(row - i >= 0) * (col + i < 8) * ((row - i) * 8 + (col + i))] == OPPONENT_BISHOP || boards[env][(row - i >= 0) * (col + i < 8) * ((row - i) * 8 + (col + i))] == OPPONENT_QUEEN);
-        covered = covered || (boards[env][(row - i >= 0) * (col + i < 8) * ((row - i) * 8 + (col + i))] != EMPTY);
+    for (int i = 1; i < 8; i++) {
+        attacks += (!covered) * (row - i >= 0) * (col + i < 8) * (boards[env][clamp(0,63,(row - i) * 8 + (col + i))] == OPPONENT_BISHOP || boards[env][clamp(0,63,(row - i) * 8 + (col + i))] == OPPONENT_QUEEN);
+        covered = covered || (boards[env][clamp(0,63,(row - i) * 8 + (col + i))] != EMPTY);
     }
 
     // count top-left attacks
     covered = false;
-    for (int i = 1; i < 7; i++) {
-        attacks += (!covered) * (row - i >= 0) * (col - i >= 0) * (boards[env][(row - i >= 0) * (col - i >= 0) * ((row - i) * 8 + (col - i))] == OPPONENT_BISHOP || boards[env][(row - i >= 0) * (col - i >= 0) * ((row - i) * 8 + (col - i))] == OPPONENT_QUEEN);
-        covered = covered || (boards[env][(row - i >= 0) * (col - i >= 0) * ((row - i) * 8 + (col - i))] != EMPTY);
+    for (int i = 1; i < 8; i++) {
+        attacks += (!covered) * (row - i >= 0) * (col - i >= 0) * (boards[env][clamp(0,63,(row - i) * 8 + (col - i))] == OPPONENT_BISHOP || boards[env][clamp(0,63,(row - i) * 8 + (col - i))] == OPPONENT_QUEEN);
+        covered = covered || (boards[env][clamp(0,63,(row - i) * 8 + (col - i))] != EMPTY);
     }
 
     // count bottom attacks
     covered = false;
-    for (int i = 1; i < 7; i++) {
-        attacks += (!covered) * (row + i < 8) * (boards[env][(row + i < 8) * ((row + i) * 8 + col)] == OPPONENT_ROOK || boards[env][(row + i < 8) * ((row + i) * 8 + col)] == OPPONENT_QUEEN);
-        covered = covered || (boards[env][(row + i < 8) * ((row + i) * 8 + col)] != EMPTY);
+    for (int i = 1; i < 8; i++) {
+        attacks += (!covered) * (row + i < 8) * (boards[env][clamp(0,63,(row + i) * 8 + col)] == OPPONENT_ROOK || boards[env][clamp(0,63,(row + i) * 8 + col)] == OPPONENT_QUEEN);
+        covered = covered || (boards[env][clamp(0,63,(row + i) * 8 + col)] != EMPTY);
     }
 
     // count top attacks
     covered = false;
-    for (int i = 1; i < 7; i++) {
-        attacks += (!covered) * (row - i >= 0) * (boards[env][(row - i >= 0) * ((row - i) * 8 + col)] == OPPONENT_ROOK || boards[env][(row - i >= 0) * ((row - i) * 8 + col)] == OPPONENT_QUEEN);
-        covered = covered || (boards[env][(row - i >= 0) * ((row - i) * 8 + col)] != EMPTY);
+    for (int i = 1; i < 8; i++) {
+        attacks += (!covered) * (row - i >= 0) * (boards[env][clamp(0,63,(row - i) * 8 + col)] == OPPONENT_ROOK || boards[env][clamp(0,63,(row - i) * 8 + col)] == OPPONENT_QUEEN);
+        covered = covered || (boards[env][clamp(0,63,(row - i) * 8 + col)] != EMPTY);
     }
 
     // count right attacks
     covered = false;
-    for (int i = 1; i < 7; i++) {
-        attacks += (!covered) * (col + i < 8) * (boards[env][(col + i < 8) * (row * 8 + col + i)] == OPPONENT_ROOK || boards[env][(col + i < 8) * (row * 8 + col + i)] == OPPONENT_QUEEN);
-        covered = covered || (boards[env][(col + i < 8) * (row * 8 + col + i)] != EMPTY);
+    for (int i = 1; i < 8; i++) {
+        attacks += (!covered) * (col + i < 8) * (boards[env][clamp(0,63,row * 8 + col + i)] == OPPONENT_ROOK || boards[env][clamp(0,63,row * 8 + col + i)] == OPPONENT_QUEEN);
+        covered = covered || (boards[env][clamp(0,63,row * 8 + col + i)] != EMPTY);
     }
 
     // count left attacks
     covered = false;
-    for (int i = 1; i < 7; i++) {
-        attacks += (!covered) * (col - i >= 0) * (boards[env][(col - i >= 0) * (row * 8 + col - i)] == OPPONENT_ROOK || boards[env][(col - i >= 0) * (row * 8 + col - i)] == OPPONENT_QUEEN);
-        covered = covered || (boards[env][(col - i >= 0) * (row * 8 + col - i)] != EMPTY);
+    for (int i = 1; i < 8; i++) {
+        attacks += (!covered) * (col - i >= 0) * (boards[env][clamp(0,63,row * 8 + col - i)] == OPPONENT_ROOK || boards[env][clamp(0,63,row * 8 + col - i)] == OPPONENT_QUEEN);
+        covered = covered || (boards[env][clamp(0,63,row * 8 + col - i)] != EMPTY);
     }
     
     return attacks;
