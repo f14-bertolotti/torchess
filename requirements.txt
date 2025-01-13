@@ -1,4 +1,3 @@
 python-chess
+torch
 tqdm
-jax
-pgx

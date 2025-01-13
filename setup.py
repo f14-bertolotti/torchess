@@ -6,7 +6,7 @@ setup(
     ext_modules=[
         CUDAExtension(
             'pawner',
-            ['chess.cu'],
+            ['pawner.cu'],
         )
     ],
     cmdclass={
