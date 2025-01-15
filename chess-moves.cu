@@ -12,35 +12,72 @@ __device__ unsigned char standard_action(
     // returns 0 if everything is ok
     // returns 1 if the action was a standard action but the conditions were not met
 
-    const char PLAYER_PAWN = 6 * players[env] + WHITE_PAWN;
+    const unsigned char PLAYER_PAWN = 6 * players[env] + WHITE_PAWN;
+    const unsigned char source_index = actions[env][0] * 8 + actions[env][1];
+    const unsigned char target_index = actions[env][2] * 8 + actions[env][3];
 
     const bool is_standard_action = (
-        (actions[env][0] >= 0) * (actions[env][0] < 8) * // 0 <= action source row <= 7
-        (actions[env][1] >= 0) * (actions[env][1] < 8) * // 0 <= action source col <= 7
-        (actions[env][2] >= 0) * (actions[env][2] < 8) * // 0 <= action target row <= 7
-        (actions[env][3] >= 0) * (actions[env][3] < 8) * // 0 <= action target col <= 7
+        (actions[env][0] >= 0) & (actions[env][0] < 8) & // 0 <= action source row <= 7
+        (actions[env][1] >= 0) & (actions[env][1] < 8) & // 0 <= action source col <= 7
+        (actions[env][2] >= 0) & (actions[env][2] < 8) & // 0 <= action target row <= 7
+        (actions[env][3] >= 0) & (actions[env][3] < 8) & // 0 <= action target col <= 7
         (actions[env][4] == 0)                           // no special action
     );
 
-    const bool is_source_fill = boards[env][actions[env][0] * 8 + actions[env][0]] != EMPTY;
+    // source should be of the player's color
+    const bool is_source_ok = (
+        ( 
+            (players[env] == BLACK           ) & // player is black
+            (boards[env][source_index] >= 7  ) & // source is black
+            (boards[env][source_index] <= 12 )   // source is black
+        ) | 
+        (
+            (players[env] == WHITE          ) & // player is white
+            (boards[env][source_index] >= 1 ) & // source is white
+            (boards[env][source_index] <= 6 )   // source is white
+        )
+    );
+
+    // target should be either empty or of the opponet's color
+    const bool is_target_ok = (
+        ( 
+            (players[env] == WHITE              ) & // if the player is white
+            (
+                (boards[env][target_index] > 6  ) & // target is black
+                (boards[env][target_index] < 12 )   // 
+            ) | boards[env][target_index] == EMPTY  // or, target is empty
+        ) | 
+        ( 
+            (players[env] == BLACK              ) & // if the player is black
+            (
+                (boards[env][target_index] > 0  ) & // target is white
+                (boards[env][target_index] < 7  )   // 
+            ) | boards[env][target_index] == EMPTY  // or, target is empty
+        ) 
+    );
     
     const bool is_pawn_moving = (
-        (actions[env][0] * 8 + actions[env][1] == PLAYER_PAWN           ) * // pawn is in the right position
-        (actions[env][0] == actions[env][2] & (players[env]==BLACK?+1:-1) ) * // pawn is moving one row forward
-        (actions[env][1] == actions[env][3]                             ) * // pawn is not changing col
-        (boards[env][actions[env][2] * 8 + actions[env][3]] == EMPTY    )   // target is empty
+        is_standard_action                                                       & // action is a standard action
+        is_source_ok                                                             & // source is of the player's color
+        (actions[env][0] * 8 + actions[env][1] == PLAYER_PAWN                  ) & // pawn is in the source position
+        (actions[env][0] == (actions[env][2] + (players[env]==BLACK ? +1 : -1))) & // pawn is moving one row forward
+        (actions[env][1] == actions[env][3]                                    ) & // pawn is not changing col
+        (boards[env][actions[env][2] * 8 + actions[env][3]] == EMPTY           )   // target is empty
     );
     
     const bool is_pawn_capturing = (
-        (boards[env][actions[env][0] * 8 + actions[env][1]] == PLAYER_PAWN   ) * // pawn is in the right position
-        (actions[env][0] == actions[env][2] & (players[env]==(BLACK ? +1 : -1))) * // pawn is moving one row forward
-        (abs(actions[env][1] - actions[env][3]) == 1                         ) * // pawn is moving one col to the side
-        (( // target is black or white
-            (boards[env][actions[env][2] * 8 + actions[env][3]] > 0  ) *
-            (boards[env][actions[env][2] * 8 + actions[env][3]] < 6  )   // target is white
-        ) + 
+        is_standard_action                                                       & // action is a standard action
+        (boards[env][actions[env][0] * 8 + actions[env][1]] == PLAYER_PAWN     ) & // pawn is in the source position
+        (actions[env][0] == (actions[env][2] + (players[env]==BLACK ? +1 : -1))) & // pawn is moving one row forward
+        (abs(actions[env][1] - actions[env][3]) == 1                           ) & // pawn is moving one col to the side
+        (( // player is capturing an opponent piece (king excluded)
+            (players[env] == BLACK                                   ) & // player is black
+            (boards[env][actions[env][2] * 8 + actions[env][3]] > 0  ) & // capturing a white
+            (boards[env][actions[env][2] * 8 + actions[env][3]] < 6  )   // capturing a white
+        ) | 
         (
-            (boards[env][actions[env][2] * 8 + actions[env][3]] > 6  ) * 
+            (players[env] == WHITE                                   ) & // player is white
+            (boards[env][actions[env][2] * 8 + actions[env][3]] > 6  ) & // capturing a black
             (boards[env][actions[env][2] * 8 + actions[env][3]] < 12 )   // target is black
         ))
     );
@@ -66,29 +103,29 @@ __device__ unsigned char kingside_castle(
     const unsigned char rook_target = (7 * players[env]) * 8 + 5;
 
     const bool is_kingside_castle = (
-        (actions[env][0] == 0   ) * // action source empty
-        (actions[env][1] == 0   ) * // action source empty
-        (actions[env][2] == 0   ) * // action target empty
-        (actions[env][3] == 0   ) * // action target empty
+        (actions[env][0] == 0   ) & // action source empty
+        (actions[env][1] == 0   ) & // action source empty
+        (actions[env][2] == 0   ) & // action target empty
+        (actions[env][3] == 0   ) & // action target empty
         (special == KING_CASTLE )   // king castling action
     );
 
     const bool is_action_ok = ( 
-        (boards[env][64 + players[env]] == 0                      ) * // king has not moved
-        (boards[env][66 + players[env]] == 0                      ) * // king-side rook has not moved
-        (boards[env][king_source] == PLAYER_KING                  ) * // king is in the right position
-        (boards[env][rook_target] == EMPTY                        ) * // king-side is empty
-        (boards[env][king_target] == EMPTY                        ) * // king-side is empty
-        (boards[env][rook_source] == PLAYER_ROOK                  ) * // king-side rook is in the right position
-        (count_attacks(env, king_source, 4, players, boards) == 0 ) * // king is not in check
-        (count_attacks(env, king_target, 5, players, boards) == 0 ) * // king-side 1 is not in check
+        (boards[env][64 + players[env]] == 0                      ) & // king has not moved
+        (boards[env][66 + players[env]] == 0                      ) & // king-side rook has not moved
+        (boards[env][king_source] == PLAYER_KING                  ) & // king is in the right position
+        (boards[env][rook_target] == EMPTY                        ) & // king-side is empty
+        (boards[env][king_target] == EMPTY                        ) & // king-side is empty
+        (boards[env][rook_source] == PLAYER_ROOK                  ) & // king-side rook is in the right position
+        (count_attacks(env, king_source, 4, players, boards) == 0 ) & // king is not in check
+        (count_attacks(env, king_target, 5, players, boards) == 0 ) & // king-side 1 is not in check
         (count_attacks(env, rook_target, 6, players, boards) == 0 )   // king-side 2 is not in check
     ); 
 
-    boards[env][king_source] = is_kingside_castle * is_action_ok ? EMPTY       : boards[env][king_source];
-    boards[env][rook_source] = is_kingside_castle * is_action_ok ? EMPTY       : boards[env][rook_source];
-    boards[env][rook_target] = is_kingside_castle * is_action_ok ? PLAYER_ROOK : boards[env][rook_target];
-    boards[env][king_target] = is_kingside_castle * is_action_ok ? PLAYER_KING : boards[env][king_target];
+    boards[env][king_source] = (is_kingside_castle & is_action_ok) ? EMPTY       : boards[env][king_source];
+    boards[env][rook_source] = (is_kingside_castle & is_action_ok) ? EMPTY       : boards[env][rook_source];
+    boards[env][rook_target] = (is_kingside_castle & is_action_ok) ? PLAYER_ROOK : boards[env][rook_target];
+    boards[env][king_target] = (is_kingside_castle & is_action_ok) ? PLAYER_KING : boards[env][king_target];
 
     return is_kingside_castle * (!is_action_ok);
 }
@@ -113,33 +150,33 @@ __device__ unsigned char queenside_castle(
     const unsigned char rook_source = (7 * players[env]) * 8 + 0;
 
     const bool is_queenside_castle =  (
-        (actions[env][0] == 0    ) * // action source empty
-        (actions[env][1] == 0    ) * // action source empty
-        (actions[env][2] == 0    ) * // action target empty
-        (actions[env][3] == 0    ) * // action target empty
+        (actions[env][0] == 0    ) & // action source empty
+        (actions[env][1] == 0    ) & // action source empty
+        (actions[env][2] == 0    ) & // action target empty
+        (actions[env][3] == 0    ) & // action target empty
         (special == QUEEN_CASTLE )   // queenside castling action
     );
 
     const bool is_action_ok = ( 
-        (boards[env][64 + players[env]] == 0                      ) * // king has not moved
-        (boards[env][68 + players[env]] == 0                      ) * // queen-side rook has not moved
-        (boards[env][king_source] == PLAYER_KING                  ) * // king is in the right position
-        (boards[env][rook_target] == EMPTY                        ) * // rook-target is empty
-        (boards[env][king_target] == EMPTY                        ) * // king-target is empty
-        (boards[env][rook_side]   == EMPTY                        ) * // rook-side is empty
-        (boards[env][rook_source] == PLAYER_ROOK                  ) * // rook is in the right position
-        (count_attacks(env, king_source, 4, players, boards) == 0 ) * // king is not in check
-        (count_attacks(env, king_target, 3, players, boards) == 0 ) * // king target is not in check
+        (boards[env][64 + players[env]] == 0                      ) & // king has not moved
+        (boards[env][68 + players[env]] == 0                      ) & // queen-side rook has not moved
+        (boards[env][king_source] == PLAYER_KING                  ) & // king is in the right position
+        (boards[env][rook_target] == EMPTY                        ) & // rook-target is empty
+        (boards[env][king_target] == EMPTY                        ) & // king-target is empty
+        (boards[env][rook_side]   == EMPTY                        ) & // rook-side is empty
+        (boards[env][rook_source] == PLAYER_ROOK                  ) & // rook is in the right position
+        (count_attacks(env, king_source, 4, players, boards) == 0 ) & // king is not in check
+        (count_attacks(env, king_target, 3, players, boards) == 0 ) & // king target is not in check
         (count_attacks(env, rook_target, 2, players, boards) == 0 )   // rook target is not in check
     );
 
-    boards[env][rook_target] = is_queenside_castle * is_action_ok ? PLAYER_ROOK : boards[env][rook_target];
-    boards[env][king_target] = is_queenside_castle * is_action_ok ? PLAYER_KING : boards[env][king_target];
-    boards[env][king_source] = is_queenside_castle * is_action_ok ? EMPTY       : boards[env][king_source];
-    boards[env][rook_side]   = is_queenside_castle * is_action_ok ? EMPTY       : boards[env][rook_side];
-    boards[env][rook_source] = is_queenside_castle * is_action_ok ? EMPTY       : boards[env][rook_source];
+    boards[env][rook_target] = (is_queenside_castle & is_action_ok) ? PLAYER_ROOK : boards[env][rook_target];
+    boards[env][king_target] = (is_queenside_castle & is_action_ok) ? PLAYER_KING : boards[env][king_target];
+    boards[env][king_source] = (is_queenside_castle & is_action_ok) ? EMPTY       : boards[env][king_source];
+    boards[env][rook_side  ] = (is_queenside_castle & is_action_ok) ? EMPTY       : boards[env][rook_side  ];
+    boards[env][rook_source] = (is_queenside_castle & is_action_ok) ? EMPTY       : boards[env][rook_source];
 
-    return is_queenside_castle * (!is_action_ok);
+    return is_queenside_castle & (!is_action_ok);
 }
 
     
