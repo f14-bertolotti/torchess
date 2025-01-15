@@ -6,7 +6,7 @@ import pawner
 
 def board2tensor(chess_board: chess.Board) -> torch.Tensor:
     """ given a chess boards returns a torch tensor representation of it """
-    torch_board = torch.zeros(1, 66, dtype=torch.long)
+    torch_board = torch.zeros(1, 66, dtype=torch.int)
     for square, piece in chess_board.piece_map().items():
         color = piece.color if piece is not None else None
         piece_type = piece.piece_type if piece is not None else None
@@ -42,7 +42,7 @@ def get_random_board(seed):
 
 def attacks_board(chess_board: chess.Board, color: chess.WHITE | chess.BLACK) -> torch.Tensor:
     """ given a chess board and a color returns a tensor with the number of attacks on each square """
-    attacks = torch.zeros(1, 64, dtype=torch.int64)
+    attacks = torch.zeros(1, 64, dtype=torch.int)
     attackers = []
     for square in chess.SQUARES: 
         attacks[0, square] += len(chess_board.attackers(color, square))
@@ -60,8 +60,8 @@ def generate_tests():
             chess_attacks,attackers = attacks_board(chess_board, chess.WHITE if color == 0 else chess.BLACK)
         
             tensor_board = board2tensor(chess_board).to("cuda:0")
-            pawner_attacks = torch.zeros(1, 64, dtype=torch.long).to("cuda:0")
-            pawner.attacks(tensor_board, torch.tensor([color], device="cuda:0"), pawner_attacks)
+            pawner_attacks = torch.zeros(1, 64, dtype=torch.int).to("cuda:0")
+            pawner.attacks(tensor_board, torch.tensor([color], device="cuda:0", dtype=torch.int), pawner_attacks)
 
             if not torch.all(chess_attacks.cpu() == pawner_attacks.cpu()):
                 print(chess.Board())

@@ -4,9 +4,9 @@
 
 __device__ unsigned char standard_action(
     int env,
-    torch::PackedTensorAccessor64<long , 1, torch::RestrictPtrTraits> players,
-    torch::PackedTensorAccessor64<long , 2, torch::RestrictPtrTraits> boards,
-    torch::PackedTensorAccessor64<long , 2, torch::RestrictPtrTraits> actions
+    torch::PackedTensorAccessor64<int , 1 , torch::RestrictPtrTraits> players ,
+    torch::PackedTensorAccessor64<int , 2 , torch::RestrictPtrTraits> boards  ,
+    torch::PackedTensorAccessor64<int , 2 , torch::RestrictPtrTraits> actions
 ) {
     // performs a standard action
     // returns 0 if everything is ok
@@ -49,9 +49,9 @@ __device__ unsigned char standard_action(
 
 __device__ unsigned char kingside_castle(
     int env,
-    torch::PackedTensorAccessor64<long , 1, torch::RestrictPtrTraits> players,
-    torch::PackedTensorAccessor64<long , 2, torch::RestrictPtrTraits> boards ,
-    torch::PackedTensorAccessor64<long , 2, torch::RestrictPtrTraits> actions
+    torch::PackedTensorAccessor64<int , 1 , torch::RestrictPtrTraits> players ,
+    torch::PackedTensorAccessor64<int , 2 , torch::RestrictPtrTraits> boards  ,
+    torch::PackedTensorAccessor64<int , 2 , torch::RestrictPtrTraits> actions
 ) {
     // performs kingside castling action
     // returns 0 if everything is ok
@@ -95,9 +95,9 @@ __device__ unsigned char kingside_castle(
 
 __device__ unsigned char queenside_castle(
     int env,
-    torch::PackedTensorAccessor64<long , 1, torch::RestrictPtrTraits> players,
-    torch::PackedTensorAccessor64<long , 2, torch::RestrictPtrTraits> boards,
-    torch::PackedTensorAccessor64<long , 2, torch::RestrictPtrTraits> actions
+    torch::PackedTensorAccessor64<int , 1 , torch::RestrictPtrTraits> players ,
+    torch::PackedTensorAccessor64<int , 2 , torch::RestrictPtrTraits> boards  ,
+    torch::PackedTensorAccessor64<int , 2 , torch::RestrictPtrTraits> actions
 ) {
     // performs queenside castling action
     // returns 0 if everything is ok
@@ -145,11 +145,11 @@ __device__ unsigned char queenside_castle(
     
 
 __global__ void step_kernel(
-    torch::PackedTensorAccessor64<long , 2, torch::RestrictPtrTraits> boards,
-    torch::PackedTensorAccessor64<long , 2, torch::RestrictPtrTraits> actions,
-    torch::PackedTensorAccessor64<long , 1, torch::RestrictPtrTraits> players,
-    torch::PackedTensorAccessor64<float, 2, torch::RestrictPtrTraits> rewards,
-    torch::PackedTensorAccessor64<bool , 1, torch::RestrictPtrTraits> dones
+    torch::PackedTensorAccessor64<int   , 2 , torch::RestrictPtrTraits> boards  ,
+    torch::PackedTensorAccessor64<int   , 2 , torch::RestrictPtrTraits> actions ,
+    torch::PackedTensorAccessor64<int   , 1 , torch::RestrictPtrTraits> players ,
+    torch::PackedTensorAccessor64<float , 2 , torch::RestrictPtrTraits> rewards ,
+    torch::PackedTensorAccessor64<bool  , 1 , torch::RestrictPtrTraits> dones
 ) {
     // This function given the action and the current boards computes the next state of the boards
     // It also updates the rewards and the dones
