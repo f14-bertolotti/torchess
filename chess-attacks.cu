@@ -6,8 +6,8 @@
 
 __device__ long count_attacks(
     int env, int row, int col, 
-    torch::PackedTensorAccessor64<int , 1 , torch::RestrictPtrTraits> players ,
-    torch::PackedTensorAccessor64<int , 2 , torch::RestrictPtrTraits> boards
+    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
+    torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards
 ) {
     long attacks = 0;
 
@@ -110,9 +110,9 @@ __device__ long count_attacks(
 }
 
 __global__ void attacks_kernel(
-    torch::PackedTensorAccessor64<int , 2 , torch::RestrictPtrTraits> boards  ,
-    torch::PackedTensorAccessor64<int , 1 , torch::RestrictPtrTraits> players ,
-    torch::PackedTensorAccessor64<int , 2 , torch::RestrictPtrTraits> colors
+    torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
+    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
+    torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> colors
 ) {
     const int env = blockIdx.x;
     const int row = threadIdx.y;

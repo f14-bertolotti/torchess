@@ -31,11 +31,11 @@ torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor pl
     int threads = 1024;
     int blocks = (boards.size(0) + threads - 1) / threads;
     step_kernel<<<blocks, threads>>>(
-        boards    .packed_accessor64<int   , 2 , torch::RestrictPtrTraits>() ,
-        actions   .packed_accessor64<int   , 2 , torch::RestrictPtrTraits>() ,
-        players   .packed_accessor64<int   , 1 , torch::RestrictPtrTraits>() ,
-        rewards   .packed_accessor64<float , 2 , torch::RestrictPtrTraits>() ,
-        dones     .packed_accessor64<bool  , 1 , torch::RestrictPtrTraits>()
+        boards    .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
+        actions   .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
+        players   .packed_accessor32<int   , 1 , torch::RestrictPtrTraits>() ,
+        rewards   .packed_accessor32<float , 2 , torch::RestrictPtrTraits>() ,
+        dones     .packed_accessor32<bool  , 1 , torch::RestrictPtrTraits>()
     );
 
     return boards;
@@ -66,9 +66,9 @@ void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor colors) 
     dim3 griddim(boards.size(0));
     dim3 blockdim(8, 8);
     attacks_kernel<<<griddim, blockdim>>>(
-        boards    .packed_accessor64<int , 2 , torch::RestrictPtrTraits>() ,
-        players   .packed_accessor64<int , 1 , torch::RestrictPtrTraits>() ,
-        colors    .packed_accessor64<int , 2 , torch::RestrictPtrTraits>()
+        boards    .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        players   .packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
+        colors    .packed_accessor32<int , 2 , torch::RestrictPtrTraits>()
     );
     cudaDeviceSynchronize();
 
