@@ -22,18 +22,18 @@ __device__ unsigned char standard_action(
         (actions[env][4] == 0)                           // no special action
     );
 
-    const bool is_source_fill = boards[actions[env][0] * 8 + actions[env][0]] != EMPTY;
+    const bool is_source_fill = boards[env][actions[env][0] * 8 + actions[env][0]] != EMPTY;
     
     const bool is_pawn_moving = (
         (actions[env][0] * 8 + actions[env][1] == PLAYER_PAWN           ) * // pawn is in the right position
-        (actions[env][0] == actions[env][2] (players[env]==BLACK?+1:-1) ) * // pawn is moving one row forward
+        (actions[env][0] == actions[env][2] & (players[env]==BLACK?+1:-1) ) * // pawn is moving one row forward
         (actions[env][1] == actions[env][3]                             ) * // pawn is not changing col
         (boards[env][actions[env][2] * 8 + actions[env][3]] == EMPTY    )   // target is empty
     );
     
     const bool is_pawn_capturing = (
         (boards[env][actions[env][0] * 8 + actions[env][1]] == PLAYER_PAWN   ) * // pawn is in the right position
-        (actions[env][0] == actions[env][2] (players[env]==(BLACK ? +1 : -1))) * // pawn is moving one row forward
+        (actions[env][0] == actions[env][2] & (players[env]==(BLACK ? +1 : -1))) * // pawn is moving one row forward
         (abs(actions[env][1] - actions[env][3]) == 1                         ) * // pawn is moving one col to the side
         (( // target is black or white
             (boards[env][actions[env][2] * 8 + actions[env][3]] > 0  ) *
