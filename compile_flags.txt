@@ -1,0 +1,6 @@
+-Wall
+-std=c++17
+-Ivenv/lib/python3.11/site-packages/torch/include/
+-Ivenv/lib/python3.11/site-packages/torch/include/torch/csrc/api/include
+-Icsrc
+-Wno-bitwise-instead-of-logical

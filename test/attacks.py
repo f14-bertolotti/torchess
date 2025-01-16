@@ -2,30 +2,7 @@ import unittest
 import torch
 import chess
 import random
-import pawner
-
-def board2tensor(chess_board: chess.Board) -> torch.Tensor:
-    """ given a chess boards returns a torch tensor representation of it """
-    torch_board = torch.zeros(1, 66, dtype=torch.int)
-    for square, piece in chess_board.piece_map().items():
-        color = piece.color if piece is not None else None
-        piece_type = piece.piece_type if piece is not None else None
-        match (color, piece_type):
-            case (None       , None         ): torch_board[0, square] = 0
-            case (chess.BLACK, chess.PAWN   ): torch_board[0, square] = 1
-            case (chess.BLACK, chess.KNIGHT ): torch_board[0, square] = 2
-            case (chess.BLACK, chess.BISHOP ): torch_board[0, square] = 3
-            case (chess.BLACK, chess.ROOK   ): torch_board[0, square] = 4
-            case (chess.BLACK, chess.QUEEN  ): torch_board[0, square] = 5
-            case (chess.BLACK, chess.KING   ): torch_board[0, square] = 6
-            case (chess.WHITE, chess.PAWN   ): torch_board[0, square] = 7
-            case (chess.WHITE, chess.KNIGHT ): torch_board[0, square] = 8
-            case (chess.WHITE, chess.BISHOP ): torch_board[0, square] = 9
-            case (chess.WHITE, chess.ROOK   ): torch_board[0, square] = 10
-            case (chess.WHITE, chess.QUEEN  ): torch_board[0, square] = 11
-            case (chess.WHITE, chess.KING   ): torch_board[0, square] = 12
-            case _ : raise ValueError(f"Invalid piece: {piece}")
-    return torch_board
+import pysrc
 
 def get_random_board(seed):
     """ generates a random board """
@@ -59,9 +36,9 @@ def generate_tests():
             chess_board, color = get_random_board(seed)
             chess_attacks,attackers = attacks_board(chess_board, chess.WHITE if color == 0 else chess.BLACK)
         
-            tensor_board = board2tensor(chess_board).to("cuda:0")
-            pawner_attacks = torch.zeros(1, 64, dtype=torch.int).to("cuda:0")
-            pawner.attacks(tensor_board, torch.tensor([color], device="cuda:0", dtype=torch.int), pawner_attacks)
+            tensor_board,_ = pysrc.utils.chessboard2tensor(chess_board)
+            tensor_board = tensor_board.to("cuda:0")
+            pawner_attacks = pysrc.count_attacks(tensor_board, torch.tensor([color], device="cuda:0", dtype=torch.int))
 
             if not torch.all(chess_attacks.cpu() == pawner_attacks.cpu()):
                 print(chess.Board())
@@ -84,4 +61,4 @@ def generate_tests():
     return DynamicTestCase
 
 # Generate the test class
-DynamicTestClass = generate_tests()
+Suite = generate_tests()

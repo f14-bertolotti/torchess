@@ -1,13 +1,14 @@
 #include <torch/extension.h>
 #include "chess-attacks.cu"
-#include "chess-moves.cu"
+#include "moves/kingside-castling.cu"
+#include "moves/queenside-castling.cu"
 
-torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor rewards, torch::Tensor dones) {
+/*torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor rewards, torch::Tensor dones) {
     // The sole purpose of this function is to check inputs shapes, and launch the kernel
 
-    // assume boards shape is (N, 68)
+    // assume boards shape is (N, 100)
     if (boards.dim()   != 2  ) throw std::invalid_argument("Boards tensor must be 3D, (N, 132)");
-    if (boards.size(1) != 132) throw std::invalid_argument("First dimension must be 132, found " + std::to_string(boards.size(1)));
+    if (boards.size(1) != 100) throw std::invalid_argument("First dimension must be 100, found " + std::to_string(boards.size(1)));
 
     // assume actions shape is (N, 4)
     if (actions.dim()   != 2) throw std::invalid_argument("Actions tensor must be 2D, (N, 4)");
@@ -40,27 +41,48 @@ torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor pl
 
     return boards;
 }
+*/
 
+void kingside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+    int threads = 512;
+    int blocks = (boards.size(0) + threads - 1) / threads;
+    kingside_castle_kernel<<<blocks, threads>>>(
+        boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
+        result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
+    );
+}
 
+void queenside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+    int threads = 1024;
+    int blocks = (boards.size(0) + threads - 1) / threads;
+    queenside_castle_kernel<<<blocks, threads>>>(
+        boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
+        result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
+    );
+}
 
-void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor colors) {
+void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) {
     // The sole purpose of this function is to make sanity cheks and launch the kernel
 
     // assume boards shape is (N, 68)
-    TORCH_CHECK(boards.dim()   == 2 , "Boards tensor must be 3D, (N, 66)");
-    TORCH_CHECK(boards.size(1) == 66, "First dimension must be 66, found " + std::to_string(boards.size(1)));
+    TORCH_CHECK(boards.dim()   == 2 , "Boards tensor must be 3D, (N, 100)");
+    TORCH_CHECK(boards.size(1) == 100, "First dimension must be 100, found " + std::to_string(boards.size(1)));
 
     // assume colors shape is (N, 64)
-    TORCH_CHECK(colors.dim()   == 2 , "Colors tensor must be 2D, (N, 64)");
-    TORCH_CHECK(colors.size(1) == 64, "First dimension must be 64, found " + std::to_string(colors.size(1)));
+    TORCH_CHECK(result.dim()   == 2 , "Colors tensor must be 2D, (N, 64)");
+    TORCH_CHECK(result.size(1) == 64, "First dimension must be 64, found " + std::to_string(result.size(1)));
 
     // assume players shape is (N)
     TORCH_CHECK(players.dim() == 1, "Players tensor must be 1D, (N)");
 
     // all tensor mush be on gpu
-    TORCH_CHECK(boards.is_cuda(), "boards must be a CUDA tensor");
+    TORCH_CHECK(boards .is_cuda(),  "boards must be a CUDA tensor");
     TORCH_CHECK(players.is_cuda(), "players must be a CUDA tensor");
-    TORCH_CHECK(colors.is_cuda(), "colors must be a CUDA tensor");
+    TORCH_CHECK(result .is_cuda(),  "colors must be a CUDA tensor");
 
     // launch a 64-threads-block for each board
     dim3 griddim(boards.size(0));
@@ -68,7 +90,7 @@ void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor colors) 
     attacks_kernel<<<griddim, blockdim>>>(
         boards    .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players   .packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
-        colors    .packed_accessor32<int , 2 , torch::RestrictPtrTraits>()
+        result    .packed_accessor32<int , 2 , torch::RestrictPtrTraits>()
     );
     cudaDeviceSynchronize();
 
@@ -81,4 +103,5 @@ void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor colors) 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, python_module) {
     //python_module.def("step", &step, "In-place Step function");
     python_module.def("attacks", &attacks, "Color function");
+    python_module.def("kingside_castling", &kingside_castling, "Color function");
 }

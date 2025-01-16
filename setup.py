@@ -2,11 +2,11 @@ from setuptools import setup
 from torch.utils.cpp_extension import CUDAExtension, BuildExtension
 
 setup(
-    name='pawner',
+    name='cpawner',
     ext_modules=[
         CUDAExtension(
-            'pawner',
-            ['pawner.cu'],
+            'cpawner',
+            ['csrc/extension.cu'],
         )
     ],
     cmdclass={

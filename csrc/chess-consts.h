@@ -28,3 +28,9 @@
 #define PROMOTION_ROOK   5
 #define PROMOTION_BISHOP 6
 #define PROMOTION_KNIGHT 7
+
+// special memory location
+#define KING_MOVED 64 // has the king moved 
+#define KINGSIDE_ROOK_MOVED 66 // has the kingside rook moved
+#define QUEENSIDE_ROOK_MOVED 68 // has the queenside rook moved
+#define PREV_ACTION 70 // previous action
