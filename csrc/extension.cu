@@ -44,7 +44,7 @@
 */
 
 void kingside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
-    int threads = 512;
+    int threads = 256;
     int blocks = (boards.size(0) + threads - 1) / threads;
     kingside_castle_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
@@ -55,7 +55,7 @@ void kingside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tenso
 }
 
 void queenside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
-    int threads = 1024;
+    int threads = 256;
     int blocks = (boards.size(0) + threads - 1) / threads;
     queenside_castle_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
@@ -101,7 +101,7 @@ void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) 
 
 // macro to create the python binding
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, python_module) {
-    //python_module.def("step", &step, "In-place Step function");
-    python_module.def("attacks", &attacks, "Color function");
-    python_module.def("kingside_castling", &kingside_castling, "Color function");
+    python_module.def("attacks", &attacks, "count attacks in the board");
+    python_module.def("kingside_castling", &kingside_castling, "kingside castling action");
+    python_module.def("queenside_castling", &queenside_castling, "queenside castling action");
 }

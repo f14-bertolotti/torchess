@@ -16,12 +16,13 @@ __device__ unsigned char queenside_castle(
 
     const unsigned char PLAYER_KING = players[env] * 6 + WHITE_KING;
     const unsigned char PLAYER_ROOK = players[env] * 6 + WHITE_ROOK;
+    const unsigned char castle_row  = players[env] == WHITE ? 7 : 0;
+    const unsigned char king_source = castle_row * 8 + 4;
+    const unsigned char rook_target = castle_row * 8 + 3;
+    const unsigned char king_target = castle_row * 8 + 2;
+    const unsigned char rook_side   = castle_row * 8 + 1;
+    const unsigned char rook_source = castle_row * 8 + 0;
     const unsigned char special = actions[env][4];
-    const unsigned char king_source = (7 * players[env]) * 8 + 4;
-    const unsigned char rook_target = (7 * players[env]) * 8 + 3;
-    const unsigned char king_target = (7 * players[env]) * 8 + 2;
-    const unsigned char rook_side   = (7 * players[env]) * 8 + 1;
-    const unsigned char rook_source = (7 * players[env]) * 8 + 0;
 
     const bool is_queenside_castle =  (
         (actions[env][0] == 0    ) & // action source empty
@@ -39,9 +40,9 @@ __device__ unsigned char queenside_castle(
         (boards[env][king_target] == EMPTY                        ) & // king-target is empty
         (boards[env][rook_side]   == EMPTY                        ) & // rook-side is empty
         (boards[env][rook_source] == PLAYER_ROOK                  ) & // rook is in the right position
-        (count_attacks(env, king_source, 4, players, boards) == 0 ) & // king is not in check
-        (count_attacks(env, king_target, 3, players, boards) == 0 ) & // king target is not in check
-        (count_attacks(env, rook_target, 2, players, boards) == 0 )   // rook target is not in check
+        (count_attacks(env, castle_row, 4, players, boards) == 0  ) & // king is not in check
+        (count_attacks(env, castle_row, 3, players, boards) == 0  ) & // king target is not in check
+        (count_attacks(env, castle_row, 2, players, boards) == 0  )   // rook target is not in check
     );
 
     boards[env][rook_target] = (is_queenside_castle & is_action_ok) ? PLAYER_ROOK : boards[env][rook_target];
@@ -59,8 +60,8 @@ __global__ void queenside_castle_kernel(
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
-    const int env = clamp(0,boards.size(0)-1,blockIdx.x * blockDim.x + threadIdx.x);
-    result[env] = queenside_castle(env, players, boards, actions);
+    const int env = blockIdx.x * blockDim.x + threadIdx.x;
+    if (env < boards.size(0)) result[env] = queenside_castle(env, players, boards, actions);
 }
 
 
