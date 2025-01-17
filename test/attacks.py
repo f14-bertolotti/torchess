@@ -22,36 +22,57 @@ def attacks_board(chess_board: chess.Board, color: chess.WHITE | chess.BLACK) ->
     attacks = torch.zeros(1, 64, dtype=torch.int)
     attackers = []
     for square in chess.SQUARES: 
-        attacks[0, square] += len(chess_board.attackers(color, square))
+        row = square // 8
+        col = square %  8
+        square_tgt = (7-row) * 8 + col
+        attacks[0, square_tgt] += len(chess_board.attackers(color, square))
         attackers.append(chess_board.attackers(color, square))
     return attacks, attackers
 
 
 def generate_tests():
-    class DynamicTestCase(unittest.TestCase): pass
+    class DynamicTestCase(unittest.TestCase): 
+
+        def test_base(self):
+            chess_board = chess.Board()
+            chess_attacks,attackers = attacks_board(chess_board, chess.BLACK)
+            tensor_board,_ = pysrc.utils.chessboard2tensor(chess_board)
+            tensor_board = tensor_board.to("cuda:0")
+            pawner_attacks = pysrc.count_attacks(tensor_board, torch.tensor([0], device="cuda:0", dtype=torch.int))
+
+            self.assertEqual(chess_attacks.tolist(), pawner_attacks.tolist())
+
+        def single_black_pawn(self):
+            stringboard,turn = """
+            ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+            ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
+            ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+            ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+            ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+            ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+            ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+            ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+            """, chess.BLACK
+
+            chessboard = pysrc.utils.string2chessboard(stringboard,turn,"")
+            tensorboard,tensorplayer = pysrc.utils.chessboard2tensor(chessboard)
+            tensorboard = tensorboard.to("cuda:0")
+            tensorplayer = tensorplayer.to("cuda:0")
+            pawner_attacks = pysrc.count_attacks(tensorboard, tensorplayer)
+            chess_attacks,attackers = attacks_board(chessboard, turn)
+
+            self.assertEqual(chess_attacks.tolist(), pawner_attacks.tolist())
+
 
     # Dynamically add methods
     for i in range(1000):
         def test_template(self, seed=i):
             chess_board, color = get_random_board(seed)
-            chess_attacks,attackers = attacks_board(chess_board, chess.WHITE if color == 0 else chess.BLACK)
+            chess_attacks,attackers = attacks_board(chess_board, chess.WHITE if color == 1 else chess.BLACK)
         
             tensor_board,_ = pysrc.utils.chessboard2tensor(chess_board)
             tensor_board = tensor_board.to("cuda:0")
             pawner_attacks = pysrc.count_attacks(tensor_board, torch.tensor([color], device="cuda:0", dtype=torch.int))
-
-            if not torch.all(chess_attacks.cpu() == pawner_attacks.cpu()):
-                print(chess.Board())
-                print()
-                print(chess_board)
-                print()
-                print(pawner_attacks.view(8,8))
-                print()
-                print(chess_attacks.view(8,8))
-                for i, attackers in enumerate(attackers):
-                    print(f"{i}:\n{attackers}")
-                print()
-                print(tensor_board)
 
             self.assertEqual(chess_attacks.tolist(), pawner_attacks.tolist())
 

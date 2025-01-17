@@ -2,6 +2,7 @@
 #include "chess-attacks.cu"
 #include "moves/kingside-castling.cu"
 #include "moves/queenside-castling.cu"
+#include "moves/promotion.cu"
 
 /*torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor rewards, torch::Tensor dones) {
     // The sole purpose of this function is to check inputs shapes, and launch the kernel
@@ -44,7 +45,7 @@
 */
 
 void kingside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
-    int threads = 256;
+    int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
     kingside_castle_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
@@ -55,9 +56,20 @@ void kingside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tenso
 }
 
 void queenside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
-    int threads = 256;
+    int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
     queenside_castle_kernel<<<blocks, threads>>>(
+        boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
+        result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
+    );
+}
+
+void promotion(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+    int threads = 128;
+    int blocks = (boards.size(0) + threads - 1) / threads;
+    promotion_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
@@ -68,7 +80,7 @@ void queenside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tens
 void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) {
     // The sole purpose of this function is to make sanity cheks and launch the kernel
 
-    // assume boards shape is (N, 68)
+    // assume boards shape is (N, 100)
     TORCH_CHECK(boards.dim()   == 2 , "Boards tensor must be 3D, (N, 100)");
     TORCH_CHECK(boards.size(1) == 100, "First dimension must be 100, found " + std::to_string(boards.size(1)));
 
@@ -79,7 +91,7 @@ void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) 
     // assume players shape is (N)
     TORCH_CHECK(players.dim() == 1, "Players tensor must be 1D, (N)");
 
-    // all tensor mush be on gpu
+    // all tensor must be on gpu
     TORCH_CHECK(boards .is_cuda(),  "boards must be a CUDA tensor");
     TORCH_CHECK(players.is_cuda(), "players must be a CUDA tensor");
     TORCH_CHECK(result .is_cuda(),  "colors must be a CUDA tensor");
@@ -104,4 +116,5 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, python_module) {
     python_module.def("attacks", &attacks, "count attacks in the board");
     python_module.def("kingside_castling", &kingside_castling, "kingside castling action");
     python_module.def("queenside_castling", &queenside_castling, "queenside castling action");
+    python_module.def("promotion", &promotion, "pawn promotion action");
 }

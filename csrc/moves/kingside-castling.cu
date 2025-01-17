@@ -12,10 +12,9 @@ __device__ unsigned char kingside_castle(
     // performs kingside castling action
     // returns 0 if everything is ok
     // returns 1 if the action was a kingside castling but the conditions were not met
-
     
-    const unsigned char PLAYER_KING = players[env] * 6 + WHITE_KING;
-    const unsigned char PLAYER_ROOK = players[env] * 6 + WHITE_ROOK;
+    const unsigned char player_king = players[env] * 6 + WHITE_KING;
+    const unsigned char player_rook = players[env] * 6 + WHITE_ROOK;
     const unsigned char special = actions[env][4];
     const unsigned char castle_row  = players[env] == WHITE ? 7 : 0;
     const unsigned char king_source = castle_row * 8 + 4;
@@ -34,10 +33,10 @@ __device__ unsigned char kingside_castle(
     const bool is_action_ok = ( 
         (boards[env][KING_MOVED + players[env]] == 0            ) & // king has not moved
         (boards[env][KINGSIDE_ROOK_MOVED + players[env]] == 0   ) & // king-side rook has not moved
-        (boards[env][king_source] == PLAYER_KING                ) & // king is in the right position
+        (boards[env][king_source] == player_king                ) & // king is in the right position
         (boards[env][rook_target] == EMPTY                      ) & // king-side is empty
         (boards[env][king_target] == EMPTY                      ) & // king-side is empty
-        (boards[env][rook_source] == PLAYER_ROOK                ) & // king-side rook is in the right position
+        (boards[env][rook_source] == player_rook                ) & // king-side rook is in the right position
         (count_attacks(env, castle_row, 4, players, boards) == 0) & // king is not in check
         (count_attacks(env, castle_row, 5, players, boards) == 0) & // king-side 1 is not in check
         (count_attacks(env, castle_row, 6, players, boards) == 0)   // king-side 2 is not in check
@@ -45,8 +44,8 @@ __device__ unsigned char kingside_castle(
 
     boards[env][king_source] = (is_kingside_castle & is_action_ok) ? EMPTY       : boards[env][king_source];
     boards[env][rook_source] = (is_kingside_castle & is_action_ok) ? EMPTY       : boards[env][rook_source];
-    boards[env][rook_target] = (is_kingside_castle & is_action_ok) ? PLAYER_ROOK : boards[env][rook_target];
-    boards[env][king_target] = (is_kingside_castle & is_action_ok) ? PLAYER_KING : boards[env][king_target];
+    boards[env][rook_target] = (is_kingside_castle & is_action_ok) ? player_rook : boards[env][rook_target];
+    boards[env][king_target] = (is_kingside_castle & is_action_ok) ? player_king : boards[env][king_target];
 
     return is_kingside_castle * (!is_action_ok);
 }

@@ -36,14 +36,14 @@ class Suite(unittest.TestCase):
 
     def test_white(self):
         stringboard,turn,rights,action = """
-        ♖ ⭘ ⭘ ⭘ ♔ ♗ ♘ ♖
-        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
         ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ⭘ ⭘ ⭘ ♔ ♗ ♘ ♖
         """, chess.WHITE, "KQkq", "e1c1"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -52,14 +52,14 @@ class Suite(unittest.TestCase):
 
     def test_black(self):
         stringboard,turn,rights,action = """
-        ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
-        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
         ♜ ⭘ ⭘ ⭘ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
         """, chess.BLACK, "KQkq", "e8c8"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -68,14 +68,14 @@ class Suite(unittest.TestCase):
 
     def test_wrong_turn_1(self):
         stringboard,turn,rights,action = """
-        ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
-        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
         ♜ ⭘ ⭘ ⭘ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
         """, chess.WHITE, "KQkq", "e8c8"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -84,14 +84,14 @@ class Suite(unittest.TestCase):
 
     def test_wrong_turn_2(self):
         stringboard,turn,rights,action = """
-        ♖ ⭘ ⭘ ⭘ ♔ ♗ ♘ ♖
-        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
         ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ⭘ ⭘ ⭘ ♔ ♗ ♘ ♖
         """, chess.BLACK, "KQkq", "e1c1"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -100,14 +100,14 @@ class Suite(unittest.TestCase):
 
     def test_white_attacking(self):
         stringboard,turn,rights,action = """
+        ♜ ⭘ ⭘ ⭘ ♚ ♝ ♞ ♜
+        ♟ ⭘ ⭘ ⭘ ♟ ♟ ♟ ♟
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ♕ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ⭘ ⭘ ⭘ ♟ ♟ ♟ ♟
-        ♜ ⭘ ⭘ ⭘ ♚ ♝ ♞ ♜
         """, chess.BLACK, "kq", "e8c8"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -116,14 +116,14 @@ class Suite(unittest.TestCase):
 
     def test_black_attacking(self):
         stringboard,turn,rights,action = """
-        ♖ ⭘ ⭘ ⭘ ♔ ♗ ♘ ♖
-        ♙ ⭘ ⭘ ⭘ ♙ ♙ ♙ ♙
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ♜ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ⭘ ⭘ ⭘ ♙ ♙ ♙ ♙
+        ♖ ⭘ ⭘ ⭘ ♔ ♗ ♘ ♖
         """, chess.WHITE, "KQ", "e1c1"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -133,14 +133,14 @@ class Suite(unittest.TestCase):
 
     def test_white_check(self):
         stringboard,turn,rights,action = """
+        ♜ ⭘ ⭘ ⭘ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ⭘ ♟ ♟ ♟
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ♕ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ⭘ ♟ ♟ ♟
-        ♜ ⭘ ⭘ ⭘ ♚ ♝ ♞ ♜
         """, chess.BLACK, "kq", "e8c8"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -149,14 +149,14 @@ class Suite(unittest.TestCase):
 
     def test_black_check(self):
         stringboard,turn,rights,action = """
-        ♖ ⭘ ⭘ ⭘ ♔ ♗ ♘ ♖
-        ♙ ♙ ♙ ♙ ⭘ ♙ ♙ ♙
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ♜ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ⭘ ♙ ♙ ♙
+        ♖ ⭘ ⭘ ⭘ ♔ ♗ ♘ ♖
         """, chess.WHITE, "KQ", "e1c1"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)

@@ -36,14 +36,14 @@ class Suite(unittest.TestCase):
 
     def test_white(self):
         stringboard,turn,rights,action = """
-        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
-        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
         ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
         """, chess.WHITE, "KQkq", "e1g1"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -52,15 +52,15 @@ class Suite(unittest.TestCase):
 
     def test_black(self):
         stringboard,turn,rights,action = """
+        ♜ ♞ ♝ ♛ ♚ ⭘ ⭘ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
         ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
-        ♜ ♞ ♝ ♛ ♚ ⭘ ⭘ ♜
-        """, chess.BLACK, "KQkq", "e8g8"
+        """, chess.BLACK, "kq", "e8g8"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -68,14 +68,14 @@ class Suite(unittest.TestCase):
 
     def test_wrong_turn_1(self):
         stringboard,turn,rights,action = """
-        ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
-        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
         ♜ ♞ ♝ ♛ ♚ ⭘ ⭘ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
         """, chess.WHITE, "KQkq", "e8g8"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -84,15 +84,31 @@ class Suite(unittest.TestCase):
 
     def test_wrong_turn_2(self):
         stringboard,turn,rights,action = """
-        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
-        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
         ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
         """, chess.BLACK, "KQkq", "e1g1"
+
+        torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
+        self.assertTrue(torch_err == chess_err == 1)
+        self.assertEqual(torch_board.tolist(), chess_board.tolist())
+
+    def test_black_attacking(self):
+        stringboard,turn,rights,action = """
+        ♜ ♞ ♝ ♛ ♚ ⭘ ⭘ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ⭘ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ♕ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        """, chess.BLACK, "kq", "e8g8"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 1)
@@ -101,29 +117,13 @@ class Suite(unittest.TestCase):
     def test_white_attacking(self):
         stringboard,turn,rights,action = """
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ♕ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ♟ ♟ ⭘ ♟
-        ♜ ♞ ♝ ♛ ♚ ⭘ ⭘ ♜
-        """, chess.BLACK, "kq", "e8g8"
-
-        torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
-        self.assertTrue(torch_err == chess_err == 1)
-        self.assertEqual(torch_board.tolist(), chess_board.tolist())
-
-    def test_black_attacking(self):
-        stringboard,turn,rights,action = """
-        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
-        ♙ ♙ ♙ ♙ ♙ ⭘ ♙ ♙
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ♜ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ⭘ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
         """, chess.WHITE, "KQ", "e1g1"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
@@ -131,32 +131,32 @@ class Suite(unittest.TestCase):
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 
 
-    def test_white_check(self):
+    def test_black_check(self):
         stringboard,turn,rights,action = """
+        ♜ ♞ ♝ ♛ ♚ ⭘ ⭘ ♜
+        ♟ ♟ ♟ ♟ ⭘ ♟ ⭘ ♟
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ♕ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ♟ ♟ ♟ ♟ ⭘ ♟ ⭘ ♟
-        ♜ ♞ ♝ ♛ ♚ ⭘ ⭘ ♜
         """, chess.BLACK, "kq", "e8g8"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 1)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 
-    def test_black_check(self):
+    def test_white_check(self):
         stringboard,turn,rights,action = """
-        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
-        ♙ ♙ ♙ ♙ ⭘ ⭘ ♙ ♙
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ♜ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ⭘ ⭘ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
         """, chess.WHITE, "KQ", "e1g1"
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
