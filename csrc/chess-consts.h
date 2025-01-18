@@ -28,6 +28,7 @@
 #define PROMOTION_ROOK   5
 #define PROMOTION_BISHOP 6
 #define PROMOTION_KNIGHT 7
+#define DOUBLE_PAWN_PUSH 8
 
 // special memory location
 #define KING_MOVED 64 // has the king moved 

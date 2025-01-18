@@ -19,7 +19,7 @@ __device__ unsigned char doublemove(
     const unsigned char player_3rd_row = players[env] == WHITE ? 4 : 3;
 
     const bool is_action_ok = (
-        (actions[env][4] == 0               ) & // no special action
+        (actions[env][4] == DOUBLE_PAWN_PUSH) & // double pawn push
         (boards[env][source] == player_pawn ) & // moving a pawn
         (actions[env][0] == player_1st_row  ) & // from the first row
         (actions[env][2] == player_3rd_row  ) & // to the third row
