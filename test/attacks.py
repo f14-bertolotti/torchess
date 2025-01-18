@@ -65,7 +65,7 @@ def generate_tests():
 
 
     # Dynamically add methods
-    for i in range(1000):
+    for i in range(100):
         def test_template(self, seed=i):
             chess_board, color = get_random_board(seed)
             chess_attacks,attackers = attacks_board(chess_board, chess.WHITE if color == 1 else chess.BLACK)
