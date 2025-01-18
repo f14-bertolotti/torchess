@@ -15,19 +15,25 @@ __device__ unsigned char pawn_movement(
     const unsigned char player_pawn = players[env] * 6 + WHITE_PAWN;
     const unsigned char source = actions[env][0] * 8 + actions[env][1];
     const unsigned char target = actions[env][2] * 8 + actions[env][3];
+    const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
+    const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
 
     const bool is_action_ok = (
         (actions[env][4] == 0              ) & // no special action
         (boards[env][source] == player_pawn) & // moving a pawn
-        (boards[env][target] == EMPTY      ) & // target is empty
         (target >= 8                       ) & // not in first row (would be a promotion)
         (target <= 55                      ) & // not in last  row (would be a promotion)
         ((
-            ( players[env] == WHITE ) & // if moving a white
-            ( source == target + 8  )   // moving forward
+            (actions[env][1] == actions[env][3]) & // pawn moving forward
+            (boards[env][target] == EMPTY      )   // action target is empty
         ) | (
-            ( players[env] == BLACK ) & // if moving a black
-            ( source == target - 8  )   // moving forward
+            (actions[env][1] == actions[env][3] - 1) & // pawn capturing left
+            (boards[env][target] >= enemy_pawn     ) & // action target is not empty
+            (boards[env][target] <= enemy_queen    )   // action target is an enemy piece
+        ) | (
+            (actions[env][1] == actions[env][3] + 1) & // pawn capturing right
+            (boards[env][target] >= enemy_pawn     ) & // action target is not empty
+            (boards[env][target] <= enemy_queen    )   // action target is an enemy piece
         ))
     );
 

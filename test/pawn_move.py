@@ -50,6 +50,22 @@ class Suite(unittest.TestCase):
         self.assertTrue(torch_err == chess_err == 0)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 
+    def test_black_capturing(self):
+        stringboard,turn,rights,action = """
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ♙ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        """, chess.BLACK, "", ("f7g6",[1,5,2,6,0])
+
+        torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
+        self.assertTrue(torch_err == chess_err == 0)
+        self.assertEqual(torch_board.tolist(), chess_board.tolist())
+
     def test_white(self):
         stringboard,turn,rights,action = """
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
@@ -61,6 +77,22 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ♙ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         """, chess.WHITE, "", ("f2f3",[6,5,5,5,0])
+
+        torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
+        self.assertTrue(torch_err == chess_err == 0)
+        self.assertEqual(torch_board.tolist(), chess_board.tolist())
+
+    def test_white_capturing(self):
+        stringboard,turn,rights,action = """
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ♙ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        """, chess.WHITE, "", ("f2g3",[6,5,5,6,0])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
