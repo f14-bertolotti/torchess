@@ -3,6 +3,7 @@
 #include "moves/kingside-castling.cu"
 #include "moves/queenside-castling.cu"
 #include "moves/promotion.cu"
+#include "moves/pawn-move.cu"
 
 /*torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor rewards, torch::Tensor dones) {
     // The sole purpose of this function is to check inputs shapes, and launch the kernel
@@ -77,6 +78,17 @@ void promotion(torch::Tensor boards, torch::Tensor actions, torch::Tensor player
     );
 }
 
+void pawn_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+    int threads = 128;
+    int blocks = (boards.size(0) + threads - 1) / threads;
+    pawn_move_kernel<<<blocks, threads>>>(
+        boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
+        result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
+    );
+}
+
 void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) {
     // The sole purpose of this function is to make sanity cheks and launch the kernel
 
@@ -117,4 +129,5 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, python_module) {
     python_module.def("kingside_castling", &kingside_castling, "kingside castling action");
     python_module.def("queenside_castling", &queenside_castling, "queenside castling action");
     python_module.def("promotion", &promotion, "pawn promotion action");
+    python_module.def("pawn_move", &pawn_move, "pawn move action");
 }
