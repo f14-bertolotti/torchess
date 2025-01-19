@@ -11,46 +11,8 @@
 #include "moves/rook-move.cu"
 #include "moves/bishop-move.cu"
 #include "moves/queen-move.cu"
+#include "chess-move.cu"
 
-/*torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor rewards, torch::Tensor dones) {
-    // The sole purpose of this function is to check inputs shapes, and launch the kernel
-
-    // assume boards shape is (N, 100)
-    if (boards.dim()   != 2  ) throw std::invalid_argument("Boards tensor must be 3D, (N, 132)");
-    if (boards.size(1) != 100) throw std::invalid_argument("First dimension must be 100, found " + std::to_string(boards.size(1)));
-
-    // assume actions shape is (N, 4)
-    if (actions.dim()   != 2) throw std::invalid_argument("Actions tensor must be 2D, (N, 4)");
-    if (actions.size(1) != 4) throw std::invalid_argument("First dimension must be 4, found " + std::to_string(actions.size(1)));
-
-    // assume players shape is (N)
-    if (players.dim() != 1) throw std::invalid_argument("Players tensor must be 1D, (N)");
-
-    // assume rewards shape is (N,2)
-    if (rewards.dim() != 2) throw std::invalid_argument("Rewards tensor must be 2D, (N, 2)");
-    if (rewards.size(1) != 2) throw std::invalid_argument("First dimension must be 2, found " + std::to_string(rewards.size(1)));
-
-    // assume terminated shape is (N)
-    if (dones.dim() != 1) throw std::invalid_argument("Dones tensor must be 1D, (N)");
-
-    // zero-fill rewards and dones
-    rewards.fill_(0);
-    dones.fill_(false);
-
-    // launch the necessary block made of 1024 threads
-    int threads = 1024;
-    int blocks = (boards.size(0) + threads - 1) / threads;
-    step_kernel<<<blocks, threads>>>(
-        boards    .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
-        actions   .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
-        players   .packed_accessor32<int   , 1 , torch::RestrictPtrTraits>() ,
-        rewards   .packed_accessor32<float , 2 , torch::RestrictPtrTraits>() ,
-        dones     .packed_accessor32<bool  , 1 , torch::RestrictPtrTraits>()
-    );
-
-    return boards;
-}
-*/
 
 void kingside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
@@ -207,6 +169,42 @@ void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) 
     if (err != cudaSuccess) throw std::runtime_error(cudaGetErrorString(err));
 }
 
+torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor rewards, torch::Tensor dones) {
+    // The sole purpose of this function is to check inputs shapes, and launch the kernel
+
+    // assume boards shape is (N, 100)
+    if (boards.dim()   != 2  ) throw std::invalid_argument("Boards tensor must be 3D, (N, 132)");
+    if (boards.size(1) != 100) throw std::invalid_argument("First dimension must be 100, found " + std::to_string(boards.size(1)));
+
+    // assume actions shape is (N, 5)
+    if (actions.dim()   != 2) throw std::invalid_argument("Actions tensor must be 2D, (N, 5)");
+    if (actions.size(1) != 5) throw std::invalid_argument("First dimension must be 5, found " + std::to_string(actions.size(1)));
+
+    // assume players shape is (N)
+    // assume terminated shape is (N)
+    // assume rewards shape is (N)
+    if (players.dim() != 1) throw std::invalid_argument("Players tensor must be 1D, (N)");
+    if (rewards.dim() != 1) throw std::invalid_argument("Rewards tensor must be 2D, (N)");
+    if (dones.dim()   != 1) throw std::invalid_argument("Dones tensor must be 1D, (N)");
+
+    // zero-fill rewards and dones
+    rewards.fill_(0);
+    dones.fill_(false);
+
+    // launch the necessary block made of 128 threads
+    int threads = 128;
+    int blocks = (boards.size(0) + threads - 1) / threads;
+    step_kernel<<<blocks, threads>>>(
+        boards    .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
+        players   .packed_accessor32<int   , 1 , torch::RestrictPtrTraits>() ,
+        actions   .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
+        rewards   .packed_accessor32<float , 1 , torch::RestrictPtrTraits>() ,
+        dones     .packed_accessor32<bool  , 1 , torch::RestrictPtrTraits>()
+    );
+
+    return boards;
+}
+
 // macro to create the python binding
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, python_module) {
     python_module.def("attacks"            , &attacks            , "count attacks in the board" );
@@ -221,4 +219,5 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, python_module) {
     python_module.def("rook_move"          , &rook_move          , "rook move action"           );
     python_module.def("bishop_move"        , &bishop_move        , "bishop move action"         );
     python_module.def("queen_move"         , &queen_move         , "queen move action"          );
+    python_module.def("step"               , &step               , "step action"                );
 }

@@ -102,7 +102,7 @@ __device__ long count_attacks(
         covered = covered | (boards[env][clamp(0,63,row * 8 + col - i)] != EMPTY);
     }
     
-    return attacks;
+    return attacks * (row <= 7 && col <= 7);
 
 }
 

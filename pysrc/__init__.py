@@ -11,3 +11,4 @@ from pysrc.pawner import king_move
 from pysrc.pawner import rook_move
 from pysrc.pawner import bishop_move
 from pysrc.pawner import queen_move
+from pysrc.pawner import step

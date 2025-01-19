@@ -3,7 +3,7 @@
 #include "../chess-attacks.cu"
 #include "../chess-consts.h"
 
-__device__ unsigned char kingside_castle(
+__device__ bool kingside_castle(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
@@ -47,7 +47,7 @@ __device__ unsigned char kingside_castle(
     boards[env][rook_target] = (is_kingside_castle & is_action_ok) ? player_rook : boards[env][rook_target];
     boards[env][king_target] = (is_kingside_castle & is_action_ok) ? player_king : boards[env][king_target];
 
-    return is_kingside_castle * (!is_action_ok);
+    return is_kingside_castle & (!is_action_ok);
 }
 
 __global__ void kingside_castle_kernel(

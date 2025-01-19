@@ -3,7 +3,7 @@
 #include "../chess-consts.h"
 #include "../clamp.cu"
 
-__device__ unsigned char bishop_movement(
+__device__ bool bishop_movement(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,

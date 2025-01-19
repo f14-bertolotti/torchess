@@ -2,7 +2,7 @@
 #include <torch/extension.h>
 #include "../chess-consts.h"
 
-__device__ unsigned char knight_movement(
+__device__ bool knight_movement(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,

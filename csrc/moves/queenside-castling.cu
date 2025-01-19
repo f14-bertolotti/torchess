@@ -4,7 +4,7 @@
 #include "../chess-consts.h"
 
 
-__device__ unsigned char queenside_castle(
+__device__ bool queenside_castle(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,

@@ -2,7 +2,7 @@
 #include <torch/extension.h>
 #include "../chess-consts.h"
 
-__device__ unsigned char pawn_promotion(
+__device__ bool pawn_promotion(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
@@ -52,7 +52,7 @@ __device__ unsigned char pawn_promotion(
     boards[env][target] = (is_pawn_promotion_ok & is_action_ok & actions[env][4] == PROMOTION_BISHOP) ? players[env] * 6 + WHITE_BISHOP : boards[env][target];
     boards[env][source] = (is_pawn_promotion_ok & is_action_ok) ? EMPTY : boards[env][source];
     
-    return is_pawn_promotion_ok * (!is_action_ok);
+    return is_pawn_promotion_ok & (!is_action_ok);
 }
 
 __global__ void promotion_kernel(
