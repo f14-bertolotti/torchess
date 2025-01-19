@@ -44,8 +44,8 @@ __device__ unsigned char king_movement(
 
     boards[env][target] = is_action_ok ? player_king : boards[env][target];
     boards[env][source] = is_action_ok ? EMPTY       : boards[env][source];
-    boards[env][KING_POSITION + players[env] * 2 + 0] = is_action_ok ? srcrow : boards[env][KING_POSITION + players[env] * 2 + 0];
-    boards[env][KING_POSITION + players[env] * 2 + 1] = is_action_ok ? srccol : boards[env][KING_POSITION + players[env] * 2 + 1];
+    boards[env][KING_POSITION + players[env] * 2 + 0] = is_action_ok ? tgtrow : boards[env][KING_POSITION + players[env] * 2 + 0];
+    boards[env][KING_POSITION + players[env] * 2 + 1] = is_action_ok ? tgtcol : boards[env][KING_POSITION + players[env] * 2 + 1];
 
 
     return !is_action_ok;
