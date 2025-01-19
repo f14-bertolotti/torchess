@@ -21,6 +21,11 @@ def pawn_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> t
     cpawner.pawn_move(board, action, player, result)
     return result
 
+def knight_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+    result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
+    cpawner.knight_move(board, action, player, result)
+    return result
+
 def pawn_double(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
     cpawner.pawn_double(board, action, player, result)
