@@ -8,6 +8,7 @@
 #include "moves/en-passant.cu"
 #include "moves/knight-move.cu"
 #include "moves/king-move.cu"
+#include "moves/rook-move.cu"
 
 /*torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor rewards, torch::Tensor dones) {
     // The sole purpose of this function is to check inputs shapes, and launch the kernel
@@ -115,6 +116,17 @@ void king_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor player
     );
 }
 
+void rook_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+    int threads = 128;
+    int blocks = (boards.size(0) + threads - 1) / threads;
+    rook_move_kernel<<<blocks, threads>>>(
+        boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
+        result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
+    );
+}
+
 void pawn_double(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
@@ -182,4 +194,5 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, python_module) {
     python_module.def("pawn_en_passant"    , &pawn_en_passant    , "pawn en passant action"     );
     python_module.def("knight_move"        , &knight_move        , "knight move action"         );
     python_module.def("king_move"          , &king_move          , "king move action"           );
+    python_module.def("rook_move"          , &rook_move          , "rook move action"           );
 }

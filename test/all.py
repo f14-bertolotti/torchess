@@ -6,6 +6,9 @@ from test.attacks import Suite as AttacksSuite
 from test.pawn_move import Suite as PawnMoveSuite
 from test.pawn_double import Suite as PawnDoubleSuite
 from test.pawn_en_passant import Suite as PawnEnPassantSuite
+from test.rook_move import Suite as RookMoveSuite
+from test.knight_move import Suite as KnightMoveSuite
+from test.king_move import Suite as KingMoveSuite
 
 if __name__ == "__main__":
     # Create a TestLoader instance
@@ -19,9 +22,15 @@ if __name__ == "__main__":
     pawn_move_suite = loader.loadTestsFromTestCase(PawnMoveSuite)
     pawn_double_suite = loader.loadTestsFromTestCase(PawnDoubleSuite)
     en_passant_suite = loader.loadTestsFromTestCase(PawnEnPassantSuite)
+    rook_move_suite = loader.loadTestsFromTestCase(RookMoveSuite)
+    knight_move_suite = loader.loadTestsFromTestCase(KnightMoveSuite)
+    king_move_suite = loader.loadTestsFromTestCase(KingMoveSuite)
 
     # Combine the tests into a single suite
     test_suite = unittest.TestSuite([
+        rook_move_suite,
+        knight_move_suite,
+        king_move_suite,
         en_passant_suite,
         pawn_double_suite,
         pawn_move_suite,

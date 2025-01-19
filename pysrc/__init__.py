@@ -8,3 +8,4 @@ from pysrc.pawner import pawn_double
 from pysrc.pawner import en_passant
 from pysrc.pawner import knight_move
 from pysrc.pawner import king_move
+from pysrc.pawner import rook_move
