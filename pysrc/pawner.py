@@ -26,6 +26,11 @@ def knight_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) ->
     cpawner.knight_move(board, action, player, result)
     return result
 
+def king_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+    result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
+    cpawner.king_move(board, action, player, result)
+    return result
+
 def pawn_double(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
     cpawner.pawn_double(board, action, player, result)
@@ -40,5 +45,4 @@ def count_attacks(board:torch.Tensor, player:torch.Tensor):
     attacks = torch.zeros(1,64, dtype=board.dtype, device=board.device)
     cpawner.attacks(board, player, attacks)
     return attacks
-
 
