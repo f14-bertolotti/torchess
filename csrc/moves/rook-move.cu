@@ -23,9 +23,17 @@ __device__ unsigned char rook_movement(
     const unsigned char tgtrow = actions[env][2];
     const unsigned char tgtcol = actions[env][3];
 
+    const char dir_x = (+1) * (srccol < tgtcol) + (-1) * (srccol > tgtcol);
+    const char dir_y = (+1) * (srcrow < tgtrow) + (-1) * (srcrow > tgtrow);
+    bool is_jumping_over = false;
+    for (int i = 1; i < abs(tgtcol - srccol) * (srcrow == tgtrow) + abs(tgtrow - srcrow) * (srccol==tgtcol); i++) {
+        is_jumping_over = is_jumping_over | (boards[env][(srcrow + i * dir_y) * 8 + (srccol + i * dir_x)] != EMPTY);
+    }
+
     const bool is_action_ok = (
-        (actions[env][4] == 0)               &   // no special action
-        (boards[env][source] == player_rook) & ( // source is a rook
+        (actions[env][4] == 0)               & // no special action
+        (boards[env][source] == player_rook) & // source is a rook
+        !is_jumping_over & (                   // rook is not jumping over other pieces
             ((srcrow == tgtrow) & (srccol <= 7)) |
             ((srccol == tgtcol) & (srcrow <= 7))
         ) & ( // target is a valid rook movement
