@@ -10,6 +10,7 @@
 #include "moves/king-move.cu"
 #include "moves/rook-move.cu"
 #include "moves/bishop-move.cu"
+#include "moves/queen-move.cu"
 
 /*torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor rewards, torch::Tensor dones) {
     // The sole purpose of this function is to check inputs shapes, and launch the kernel
@@ -139,6 +140,17 @@ void bishop_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor play
     );
 }
 
+void queen_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+    int threads = 128;
+    int blocks = (boards.size(0) + threads - 1) / threads;
+    queen_move_kernel<<<blocks, threads>>>(
+        boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
+        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
+        result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
+    );
+}
+
 void pawn_double(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
@@ -208,4 +220,5 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, python_module) {
     python_module.def("king_move"          , &king_move          , "king move action"           );
     python_module.def("rook_move"          , &rook_move          , "rook move action"           );
     python_module.def("bishop_move"        , &bishop_move        , "bishop move action"         );
+    python_module.def("queen_move"         , &queen_move         , "queen move action"          );
 }

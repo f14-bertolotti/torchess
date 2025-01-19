@@ -41,6 +41,11 @@ def bishop_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) ->
     cpawner.bishop_move(board, action, player, result)
     return result
 
+def queen_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+    result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
+    cpawner.queen_move(board, action, player, result)
+    return result
+
 def pawn_double(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
     cpawner.pawn_double(board, action, player, result)

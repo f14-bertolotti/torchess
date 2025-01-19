@@ -10,6 +10,7 @@ from test.rook_move import        Suite as RookMoveSuite
 from test.knight_move import      Suite as KnightMoveSuite
 from test.king_move import        Suite as KingMoveSuite
 from test.bishop_move import      Suite as BishopMoveSuite
+from test.queen_move import       Suite as QueenMoveSuite
 
 if __name__ == "__main__":
     # Create a TestLoader instance
@@ -27,9 +28,11 @@ if __name__ == "__main__":
     knight_move_suite = loader.loadTestsFromTestCase(KnightMoveSuite)
     king_move_suite   = loader.loadTestsFromTestCase(KingMoveSuite)
     bishop_move_suite = loader.loadTestsFromTestCase(BishopMoveSuite)
+    queen_move_suite  = loader.loadTestsFromTestCase(QueenMoveSuite)
 
     # Combine the tests into a single suite
     test_suite = unittest.TestSuite([
+        queen_move_suite  ,
         bishop_move_suite ,
         rook_move_suite   ,
         knight_move_suite ,
