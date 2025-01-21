@@ -18,7 +18,7 @@ __global__ void step_kernel(
     torch::PackedTensorAccessor32<int  , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int  , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int  , 2 , torch::RestrictPtrTraits> actions ,
-    torch::PackedTensorAccessor32<float, 1 , torch::RestrictPtrTraits> rewards ,
+    torch::PackedTensorAccessor32<float, 2 , torch::RestrictPtrTraits> rewards ,
     torch::PackedTensorAccessor32<bool , 1 , torch::RestrictPtrTraits> dones
 ) {
     // performs a standard action
@@ -26,6 +26,7 @@ __global__ void step_kernel(
     // returns 1 if the action was a standard action but the conditions were not met
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
 
+    // make action
     const bool is_action_ok = !(
         kingside_castle (env, players, boards, actions) &
         queenside_castle(env, players, boards, actions) &
@@ -44,38 +45,26 @@ __global__ void step_kernel(
     const unsigned char king_row = boards[env][KING_POSITION + players[env] * 2 + 0];
     const unsigned char king_col = boards[env][KING_POSITION + players[env] * 2 + 1];
     const bool is_king_ok = !(count_attacks(env, king_row, king_col, players, boards) > 0);
+    const unsigned char player = players[env];
+    const unsigned char enemy  = (players[env] + 1) % 2;
 
-    
-    // check if the game is over
-    const unsigned char enemy_king_row = boards[env][KING_POSITION + (players[env] + 1) % 2 * 2 + 0];
-    const unsigned char enemy_king_col = boards[env][KING_POSITION + (players[env] + 1) % 2 * 2 + 1];
-    const bool is_winning_action = (
-        (
-            (enemy_king_row < 7) & ((boards[env][clamp(0,63,(enemy_king_row+1) * 8 + enemy_king_col)] != EMPTY) | (count_attacks(env, enemy_king_row+1, enemy_king_col, players, boards) > 0))
-        ) & ( // down movement not possible
-            (enemy_king_row > 1) & ((boards[env][clamp(0,63,(enemy_king_row-1) * 8 + enemy_king_col)] != EMPTY) | (count_attacks(env, enemy_king_row-1, enemy_king_col, players, boards) > 0))
-        ) & ( // up movement not possible
-            (enemy_king_col < 7) & ((boards[env][clamp(0,63,enemy_king_row * 8 + enemy_king_col + 1)] != EMPTY) | (count_attacks(env, enemy_king_row, enemy_king_col+1, players, boards) > 0))
-        ) & ( // right movement not possible
-            (enemy_king_col > 1) & ((boards[env][clamp(0,63,enemy_king_row * 8 + enemy_king_col - 1)] != EMPTY) | (count_attacks(env, enemy_king_row, enemy_king_col-1, players, boards) > 0))
-        ) & (// left movement not possible
-            (enemy_king_row < 7) & (enemy_king_col < 7) & ((boards[env][clamp(0,63,(enemy_king_row+1) * 8 + enemy_king_col + 1)] != EMPTY) | (count_attacks(env, enemy_king_row+1, enemy_king_col+1, players, boards) > 0))
-        ) & (// down-right movement not possible
-            (enemy_king_row > 1) & (enemy_king_col > 1) & ((boards[env][clamp(0,63,(enemy_king_row-1) * 8 + enemy_king_col - 1)] != EMPTY) | (count_attacks(env, enemy_king_row-1, enemy_king_col-1, players, boards) > 0))
-        ) & (// up-left movement not possible
-            (enemy_king_row < 7) & (enemy_king_col < 7) & ((boards[env][clamp(0,63,(enemy_king_row+1) * 8 + enemy_king_col + 1)] != EMPTY) | (count_attacks(env, enemy_king_row+1, enemy_king_col+1, players, boards) > 0))
-        ) & (// down-left movement not possible
-            (enemy_king_row > 1) & (enemy_king_col < 7) & ((boards[env][clamp(0,63,(enemy_king_row-1) * 8 + enemy_king_col + 1)] != EMPTY) | (count_attacks(env, enemy_king_row-1, enemy_king_col+1, players, boards) > 0))
-        ) & (// up-right movement not possible
-            (enemy_king_row < 7) & (enemy_king_col > 1) & ((boards[env][clamp(0,63,(enemy_king_row+1) * 8 + enemy_king_col - 1)] != EMPTY) | (count_attacks(env, enemy_king_row+1, enemy_king_col-1, players, boards) > 0))
-        )
+     // zero reward if action ok
+     // the action was not allowed or uncovered the king
+    rewards[env][player] = (
+        ( is_action_ok &  is_king_ok) * +0.0f +
+        (!is_action_ok | !is_king_ok) * -1.0f
     );
 
-    rewards[env] = (is_action_ok & is_king_ok &  is_winning_action) + 
-                   (is_action_ok & is_king_ok & !is_winning_action) * 0 + 
-                   (!is_action_ok | !is_king_ok) * -1;
-    
-    dones[env] = is_winning_action | !is_action_ok | !is_king_ok;
+    // if the player's action left the king uncovered, enemy get +1
+    // otherwise nothing
+    rewards[env][enemy] = (
+        (!is_king_ok) * +1.0f + 
+        ( is_king_ok) * +0.0f
+    );
+
+    // if one makes an illegal action, or 
+    // if one leave the king in check terminate the environment
+    dones[env] = !is_action_ok | !is_king_ok;
 
 }
 

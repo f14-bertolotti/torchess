@@ -20,6 +20,7 @@ def move(stringboard,turn,rights,mv):
     torchboard,torchplayers = utils.chessboard2tensor(chessboard)
     torchboard = torchboard.to("cuda:0")
     torchaction = torch.tensor([mv[1]], dtype=torch.int)
+
     torch_rew, torch_win = pysrc.step(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0"))
 
     try:
@@ -29,7 +30,7 @@ def move(stringboard,turn,rights,mv):
     except Exception as e:
         chess_err = 1
     
-    return torch_rew.item(), torch_win.item(), chess_err, torchboard[:,:64], pysrc.utils.chessboard2tensor(chessboard)[0][:,:64]
+    return torch_rew, torch_win.item(), chess_err, torchboard[:,:64], pysrc.utils.chessboard2tensor(chessboard)[0][:,:64]
 
 
 class Suite(unittest.TestCase): 
@@ -48,7 +49,8 @@ class Suite(unittest.TestCase):
 
         torch_rew, torch_win, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(chess_err == 0)
-        self.assertTrue(torch_rew == 0)
+        self.assertTrue(torch_rew[0,0] == 0)
+        self.assertTrue(torch_rew[0,1] == 0)
         self.assertTrue(torch_win == 0)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 

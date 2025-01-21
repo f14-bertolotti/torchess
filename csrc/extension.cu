@@ -180,11 +180,13 @@ torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor pl
     if (actions.dim()   != 2) throw std::invalid_argument("Actions tensor must be 2D, (N, 5)");
     if (actions.size(1) != 5) throw std::invalid_argument("First dimension must be 5, found " + std::to_string(actions.size(1)));
 
+    // assume rewards shape is (N)
+    if (rewards.dim()   != 2) throw std::invalid_argument("Rewards tensor must be 2D, (N)");
+    if (rewards.size(1) != 2) throw std::invalid_argument("First dimension must be 2, found " + std::to_string(rewards.size(1)));
+
     // assume players shape is (N)
     // assume terminated shape is (N)
-    // assume rewards shape is (N)
     if (players.dim() != 1) throw std::invalid_argument("Players tensor must be 1D, (N)");
-    if (rewards.dim() != 1) throw std::invalid_argument("Rewards tensor must be 2D, (N)");
     if (dones.dim()   != 1) throw std::invalid_argument("Dones tensor must be 1D, (N)");
 
     // zero-fill rewards and dones
@@ -198,7 +200,7 @@ torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor pl
         boards    .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
         players   .packed_accessor32<int   , 1 , torch::RestrictPtrTraits>() ,
         actions   .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
-        rewards   .packed_accessor32<float , 1 , torch::RestrictPtrTraits>() ,
+        rewards   .packed_accessor32<float , 2 , torch::RestrictPtrTraits>() ,
         dones     .packed_accessor32<bool  , 1 , torch::RestrictPtrTraits>()
     );
 
