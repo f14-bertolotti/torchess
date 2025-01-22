@@ -23,12 +23,10 @@
 #define MOVE             0
 #define KING_CASTLE      1
 #define QUEEN_CASTLE     2
-#define EN_PASSANT       3
-#define PROMOTION_QUEEN  4
-#define PROMOTION_ROOK   5
-#define PROMOTION_BISHOP 6
-#define PROMOTION_KNIGHT 7
-#define DOUBLE_PAWN_PUSH 8
+#define PROMOTION_QUEEN  3
+#define PROMOTION_ROOK   4
+#define PROMOTION_BISHOP 5
+#define PROMOTION_KNIGHT 6
 
 // special memory location
 #define KING_MOVED 64 // has the king moved 

@@ -44,7 +44,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.BLACK, "", ("f2f1q",[6,5,7,5,4])
+        """, chess.BLACK, "", ("f2f1q",[6,5,7,5,3])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -60,7 +60,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.BLACK, "", ("f2f1r",[6,5,7,5,5])
+        """, chess.BLACK, "", ("f2f1r",[6,5,7,5,4])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -76,7 +76,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.BLACK, "", ("f2f1b",[6,5,7,5,6])
+        """, chess.BLACK, "", ("f2f1b",[6,5,7,5,5])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
 
@@ -93,7 +93,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.BLACK, "", ("f2f1n",[6,5,7,5,7])
+        """, chess.BLACK, "", ("f2f1n",[6,5,7,5,6])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -109,7 +109,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.WHITE, "", ("f7f8q",[1,5,0,5,4])
+        """, chess.WHITE, "", ("f7f8q",[1,5,0,5,3])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -125,7 +125,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.WHITE, "", ("f7f8r",[1,5,0,5,5])
+        """, chess.WHITE, "", ("f7f8r",[1,5,0,5,4])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -141,7 +141,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.WHITE, "", ("f7f8b",[1,5,0,5,6])
+        """, chess.WHITE, "", ("f7f8b",[1,5,0,5,5])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
 
@@ -158,7 +158,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.WHITE, "", ("f7f8n",[1,5,0,5,7])
+        """, chess.WHITE, "", ("f7f8n",[1,5,0,5,6])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -174,7 +174,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ♙ ⭘ ⭘ ⭘
-        """, chess.BLACK, "", ("f2e1q",[6,5,7,4,4])
+        """, chess.BLACK, "", ("f2e1q",[6,5,7,4,3])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -190,7 +190,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ♙ ⭘ ⭘
-        """, chess.BLACK, "", ("f2f1q",[6,5,7,5,4])
+        """, chess.BLACK, "", ("f2f1q",[6,5,7,5,3])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 1)
@@ -206,7 +206,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.WHITE, "", ("f7g8q",[1,5,0,6,4])
+        """, chess.WHITE, "", ("f7g8q",[1,5,0,6,3])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -222,7 +222,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.WHITE, "", ("f7f8q",[1,5,0,5,4])
+        """, chess.WHITE, "", ("f7f8q",[1,5,0,5,3])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 1)

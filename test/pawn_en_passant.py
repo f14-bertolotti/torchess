@@ -50,7 +50,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.BLACK, "", ("g5f6",[3,6,2,5,0]), ("f7f5",[1,5,3,5,8])
+        """, chess.BLACK, "", ("g5f6",[3,6,2,5,0]), ("f7f5",[1,5,3,5,0])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action,prev)
         self.assertTrue(torch_err == chess_err == 0)
@@ -66,7 +66,7 @@ class Suite(unittest.TestCase):
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ♙ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.WHITE, "", ("g4f3",[4,6,5,5,0]), ("f2f4",[6,5,4,5,8])
+        """, chess.WHITE, "", ("g4f3",[4,6,5,5,0]), ("f2f4",[6,5,4,5,0])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action,prev)
         self.assertTrue(torch_err == chess_err == 0)

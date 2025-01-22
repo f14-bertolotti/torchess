@@ -55,3 +55,42 @@ class Suite(unittest.TestCase):
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 
 
+    def test_1(self):
+        stringboard,turn,rights,action = """
+        ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+        """, chess.WHITE, "KQkq", ("a2b7",[6,0,1,1,0])
+
+        torch_rew, torch_win, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
+        self.assertTrue(chess_err == 1)
+        self.assertTrue(torch_rew[0,0] == -1)
+        self.assertTrue(torch_rew[0,1] == 0)
+        self.assertEqual(torch_board.tolist(), chess_board.tolist())
+
+
+
+    def test_2(self):
+        stringboard,turn,rights,action = """
+        ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+        """, chess.WHITE, "KQkq", ("a2a4",[6,0,4,0,0])
+
+        torch_rew, torch_win, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
+        self.assertTrue(chess_err == 0)
+        self.assertTrue(torch_rew[0,0] == 0)
+        self.assertTrue(torch_rew[0,1] == 0)
+        self.assertEqual(torch_board.tolist(), chess_board.tolist())
+
+  

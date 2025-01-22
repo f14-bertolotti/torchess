@@ -31,6 +31,7 @@ __device__ bool kingside_castle(
     );
 
     const bool is_action_ok = ( 
+        is_kingside_castle                                        & // kingside castling action
         (boards[env][KING_MOVED + players[env]] == 0            ) & // king has not moved
         (boards[env][KINGSIDE_ROOK_MOVED + players[env]] == 0   ) & // king-side rook has not moved
         (boards[env][king_source] == player_king                ) & // king is in the right position
@@ -42,12 +43,12 @@ __device__ bool kingside_castle(
         (count_attacks(env, castle_row, 6, players, boards) == 0)   // king-side 2 is not in check
     );
 
-    boards[env][king_source] = (is_kingside_castle & is_action_ok) ? EMPTY       : boards[env][king_source];
-    boards[env][rook_source] = (is_kingside_castle & is_action_ok) ? EMPTY       : boards[env][rook_source];
-    boards[env][rook_target] = (is_kingside_castle & is_action_ok) ? player_rook : boards[env][rook_target];
-    boards[env][king_target] = (is_kingside_castle & is_action_ok) ? player_king : boards[env][king_target];
+    boards[env][king_source] = is_action_ok ? EMPTY       : boards[env][king_source];
+    boards[env][rook_source] = is_action_ok ? EMPTY       : boards[env][rook_source];
+    boards[env][rook_target] = is_action_ok ? player_rook : boards[env][rook_target];
+    boards[env][king_target] = is_action_ok ? player_king : boards[env][king_target];
 
-    return is_kingside_castle & (!is_action_ok);
+    return !is_action_ok;
 }
 
 __global__ void kingside_castle_kernel(

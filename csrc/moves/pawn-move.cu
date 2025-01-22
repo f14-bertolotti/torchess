@@ -23,6 +23,7 @@ __device__ bool pawn_movement(
         (boards[env][source] == player_pawn) & // moving a pawn
         (target >= 8                       ) & // not in first row (would be a promotion)
         (target <= 55                      ) & // not in last  row (would be a promotion)
+        (abs(actions[env][0]-actions[env][2]) == 1) & // at most one step
         ((
             (actions[env][1] == actions[env][3]) & // pawn moving forward
             (boards[env][target] == EMPTY      )   // action target is empty

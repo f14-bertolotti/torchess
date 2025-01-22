@@ -42,5 +42,5 @@ def chessboard2tensor(chessboard: chess.Board):
         torch_board[0, 65] = 0
         torch_board[0, 69] = 0
 
-    return torch_board, players
+    return torch_board.to("cuda:0"), players.to("cuda:0")
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <torch/extension.h>
 #include "../chess-consts.h"
+#include "../clamp.cu"
 
 __device__ bool doublemove(
     int env,
@@ -19,13 +20,13 @@ __device__ bool doublemove(
     const unsigned char player_3rd_row = players[env] == WHITE ? 4 : 3;
 
     const bool is_action_ok = (
-        (actions[env][4] == DOUBLE_PAWN_PUSH) & // double pawn push
+        (actions[env][4] == 0               ) & // no special move
         (boards[env][source] == player_pawn ) & // moving a pawn
         (actions[env][0] == player_1st_row  ) & // from the first row
         (actions[env][2] == player_3rd_row  ) & // to the third row
         (actions[env][1] == actions[env][3] ) & // moving in the same column
         (boards[env][target] == EMPTY       ) & // action target is empty
-        (boards[env][source + ((+8) * players[env] + (-8) * (1-players[env]))] == EMPTY) // intermediate cell is empty
+        (boards[env][clamp(0,63,source + ((+8) * players[env] + (-8) * (1-players[env])))] == EMPTY) // intermediate cell is empty
     );
 
     boards[env][target] = is_action_ok ? player_pawn : boards[env][target];

@@ -20,15 +20,8 @@ __device__ bool pawn_promotion(
     const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
     const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
 
-    const bool is_pawn_promotion_ok = (
-        actions[env][0] >= 0 & actions[env][0] <= 7 & // action source is in bounds
-        actions[env][1] >= 0 & actions[env][1] <= 7 & // action source is in bounds
-        actions[env][2] >= 0 & actions[env][2] <= 7 & // action target is in bounds
-        actions[env][3] >= 0 & actions[env][3] <= 7 & // action target is in bounds
-        actions[env][4] >= 4 & actions[env][4] <= 7   // action is a pawn promotion
-    );
-
     const bool is_action_ok = (
+        (actions[env][4] >= PROMOTION_QUEEN & actions[env][4] <= PROMOTION_KNIGHT) & // action is a pawn promotion
         (actions[env][0] == starting_row     ) & // action source is in pre-promotion row
         (actions[env][2] == promotion_row    ) & // action target is in promotion row
         (boards[env][source] == player_pawn  ) & // action source is a pawn
@@ -46,13 +39,13 @@ __device__ bool pawn_promotion(
         ))
     );
 
-    boards[env][target] = (is_pawn_promotion_ok & is_action_ok & actions[env][4] == PROMOTION_QUEEN ) ? players[env] * 6 + WHITE_QUEEN  : boards[env][target];
-    boards[env][target] = (is_pawn_promotion_ok & is_action_ok & actions[env][4] == PROMOTION_KNIGHT) ? players[env] * 6 + WHITE_KNIGHT : boards[env][target];
-    boards[env][target] = (is_pawn_promotion_ok & is_action_ok & actions[env][4] == PROMOTION_ROOK  ) ? players[env] * 6 + WHITE_ROOK   : boards[env][target];
-    boards[env][target] = (is_pawn_promotion_ok & is_action_ok & actions[env][4] == PROMOTION_BISHOP) ? players[env] * 6 + WHITE_BISHOP : boards[env][target];
-    boards[env][source] = (is_pawn_promotion_ok & is_action_ok) ? EMPTY : boards[env][source];
+    boards[env][target] = (is_action_ok & (actions[env][4] == PROMOTION_QUEEN )) ? players[env] * 6 + WHITE_QUEEN  : boards[env][target];
+    boards[env][target] = (is_action_ok & (actions[env][4] == PROMOTION_KNIGHT)) ? players[env] * 6 + WHITE_KNIGHT : boards[env][target];
+    boards[env][target] = (is_action_ok & (actions[env][4] == PROMOTION_ROOK  )) ? players[env] * 6 + WHITE_ROOK   : boards[env][target];
+    boards[env][target] = (is_action_ok & (actions[env][4] == PROMOTION_BISHOP)) ? players[env] * 6 + WHITE_BISHOP : boards[env][target];
+    boards[env][source] = (is_action_ok) ? EMPTY : boards[env][source];
     
-    return is_pawn_promotion_ok & (!is_action_ok);
+    return !is_action_ok;
 }
 
 __global__ void promotion_kernel(
