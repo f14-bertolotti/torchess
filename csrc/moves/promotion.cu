@@ -2,7 +2,7 @@
 #include <torch/extension.h>
 #include "../chess-consts.h"
 
-__device__ bool pawn_promotion(
+__device__ bool promotion_move(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
@@ -55,7 +55,7 @@ __global__ void promotion_kernel(
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(0)) result[env] = pawn_promotion(env, players, boards, actions);
+    if (env < boards.size(0)) result[env] = promotion_move(env, players, boards, actions);
 }
 
 

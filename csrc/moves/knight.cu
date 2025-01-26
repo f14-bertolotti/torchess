@@ -2,7 +2,7 @@
 #include <torch/extension.h>
 #include "../chess-consts.h"
 
-__device__ bool knight_movement(
+__device__ bool knight_move(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
@@ -47,14 +47,14 @@ __device__ bool knight_movement(
     return !is_action_ok;
 }
 
-__global__ void knight_move_kernel(
+__global__ void knight_kernel(
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(0)) result[env] = knight_movement(env, players, boards, actions);
+    if (env < boards.size(0)) result[env] = knight_move(env, players, boards, actions);
 }
 
 

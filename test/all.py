@@ -1,16 +1,16 @@
 import unittest 
-from test.kingside_castle import  Suite as KingsideCastleSuite
+from test.kingside_castle  import Suite as KingsideCastleSuite
 from test.queenside_castle import Suite as QueensideCastleSuite
-from test.promotion import        Suite as PromotionSuite
-from test.attacks import          Suite as AttacksSuite
-from test.pawn_move import        Suite as PawnMoveSuite
-from test.pawn_double import      Suite as PawnDoubleSuite
-from test.pawn_en_passant import  Suite as PawnEnPassantSuite
-from test.rook_move import        Suite as RookMoveSuite
-from test.knight_move import      Suite as KnightMoveSuite
-from test.king_move import        Suite as KingMoveSuite
-from test.bishop_move import      Suite as BishopMoveSuite
-from test.queen_move import       Suite as QueenMoveSuite
+from test.promotion        import Suite as PromotionSuite
+from test.attacks          import Suite as AttacksSuite
+from test.pawn             import Suite as PawnMoveSuite
+from test.doublepush       import Suite as PawnDoubleSuite
+from test.enpassant        import Suite as PawnEnPassantSuite
+from test.rook             import Suite as RookMoveSuite
+from test.knight           import Suite as KnightMoveSuite
+from test.king             import Suite as KingMoveSuite
+from test.bishop           import Suite as BishopMoveSuite
+from test.queen            import Suite as QueenMoveSuite
 
 if __name__ == "__main__":
     # Create a TestLoader instance

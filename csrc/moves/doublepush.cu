@@ -3,7 +3,7 @@
 #include "../chess-consts.h"
 #include "../clamp.cu"
 
-__device__ bool doublemove(
+__device__ bool doublepush_move(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
@@ -35,14 +35,14 @@ __device__ bool doublemove(
     return !is_action_ok;
 }
 
-__global__ void doublemove_kernel(
+__global__ void doublepush_kernel(
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(0)) result[env] = doublemove(env, players, boards, actions);
+    if (env < boards.size(0)) result[env] = doublepush_move(env, players, boards, actions);
 }
 
 

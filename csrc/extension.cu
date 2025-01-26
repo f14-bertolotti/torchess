@@ -3,15 +3,15 @@
 #include "moves/kingside-castling.cu"
 #include "moves/queenside-castling.cu"
 #include "moves/promotion.cu"
-#include "moves/pawn-move.cu"
-#include "moves/double-move.cu"
-#include "moves/en-passant.cu"
-#include "moves/knight-move.cu"
-#include "moves/king-move.cu"
-#include "moves/rook-move.cu"
-#include "moves/bishop-move.cu"
-#include "moves/queen-move.cu"
-#include "chess-move.cu"
+#include "moves/pawn.cu"
+#include "moves/doublepush.cu"
+#include "moves/enpassant.cu"
+#include "moves/knight.cu"
+#include "moves/king.cu"
+#include "moves/rook.cu"
+#include "moves/bishop.cu"
+#include "moves/queen.cu"
+#include "step.cu"
 
 
 void kingside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
@@ -47,10 +47,10 @@ void promotion(torch::Tensor boards, torch::Tensor actions, torch::Tensor player
     );
 }
 
-void pawn_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void pawn(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
-    pawn_move_kernel<<<blocks, threads>>>(
+    pawn_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
@@ -58,10 +58,10 @@ void pawn_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor player
     );
 }
 
-void knight_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void knight(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
-    knight_move_kernel<<<blocks, threads>>>(
+    knight_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
@@ -69,10 +69,10 @@ void knight_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor play
     );
 }
 
-void king_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void king(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
-    king_move_kernel<<<blocks, threads>>>(
+    king_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
@@ -80,10 +80,10 @@ void king_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor player
     );
 }
 
-void rook_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void rook(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
-    rook_move_kernel<<<blocks, threads>>>(
+    rook_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
@@ -91,10 +91,10 @@ void rook_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor player
     );
 }
 
-void bishop_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void bishop(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
-    bishop_move_kernel<<<blocks, threads>>>(
+    bishop_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
@@ -102,10 +102,10 @@ void bishop_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor play
     );
 }
 
-void queen_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void queen(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
-    queen_move_kernel<<<blocks, threads>>>(
+    queen_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
@@ -113,10 +113,10 @@ void queen_move(torch::Tensor boards, torch::Tensor actions, torch::Tensor playe
     );
 }
 
-void pawn_double(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void doublepush(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
-    doublemove_kernel<<<blocks, threads>>>(
+    doublepush_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
@@ -124,10 +124,10 @@ void pawn_double(torch::Tensor boards, torch::Tensor actions, torch::Tensor play
     );
 }
 
-void pawn_en_passant(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void enpassant(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
-    en_passant_kernel<<<blocks, threads>>>(
+    enpassant_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
@@ -213,13 +213,13 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, python_module) {
     python_module.def("kingside_castling"  , &kingside_castling  , "kingside castling action"   );
     python_module.def("queenside_castling" , &queenside_castling , "queenside castling action"  );
     python_module.def("promotion"          , &promotion          , "pawn promotion action"      );
-    python_module.def("pawn_move"          , &pawn_move          , "pawn move action"           );
-    python_module.def("pawn_double"        , &pawn_double        , "pawn double move action"    );
-    python_module.def("pawn_en_passant"    , &pawn_en_passant    , "pawn en passant action"     );
-    python_module.def("knight_move"        , &knight_move        , "knight move action"         );
-    python_module.def("king_move"          , &king_move          , "king move action"           );
-    python_module.def("rook_move"          , &rook_move          , "rook move action"           );
-    python_module.def("bishop_move"        , &bishop_move        , "bishop move action"         );
-    python_module.def("queen_move"         , &queen_move         , "queen move action"          );
+    python_module.def("pawn"               , &pawn               , "pawn move action"           );
+    python_module.def("doublepush"         , &doublepush         , "pawn double move action"    );
+    python_module.def("enpassant"          , &enpassant          , "pawn en passant action"     );
+    python_module.def("knight"             , &knight             , "knight move action"         );
+    python_module.def("king"               , &king               , "king move action"           );
+    python_module.def("rook"               , &rook               , "rook move action"           );
+    python_module.def("bishop"             , &bishop             , "bishop move action"         );
+    python_module.def("queen"              , &queen              , "queen move action"          );
     python_module.def("step"               , &step               , "step action"                );
 }

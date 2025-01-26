@@ -2,7 +2,7 @@
 #include <torch/extension.h>
 #include "../chess-consts.h"
 
-__device__ bool en_passant(
+__device__ bool enpassant_move(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
@@ -40,14 +40,14 @@ __device__ bool en_passant(
     return !is_action_ok;
 }
 
-__global__ void en_passant_kernel(
+__global__ void enpassant_kernel(
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(0)) result[env] = en_passant(env, players, boards, actions);
+    if (env < boards.size(0)) result[env] = enpassant_move(env, players, boards, actions);
 }
 
 

@@ -16,44 +16,44 @@ def promotion(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> t
     cpawner.promotion(board, action, player, result)
     return result
 
-def pawn_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+def pawn(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
-    cpawner.pawn_move(board, action, player, result)
+    cpawner.pawn(board, action, player, result)
     return result
 
-def knight_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+def knight(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
-    cpawner.knight_move(board, action, player, result)
+    cpawner.knight(board, action, player, result)
     return result
 
-def king_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+def king(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
-    cpawner.king_move(board, action, player, result)
+    cpawner.king(board, action, player, result)
     return result
 
-def rook_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+def rook(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
-    cpawner.rook_move(board, action, player, result)
+    cpawner.rook(board, action, player, result)
     return result
 
-def bishop_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+def bishop(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
-    cpawner.bishop_move(board, action, player, result)
+    cpawner.bishop(board, action, player, result)
     return result
 
-def queen_move(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+def queen(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
-    cpawner.queen_move(board, action, player, result)
+    cpawner.queen(board, action, player, result)
     return result
 
-def pawn_double(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+def doublepush(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
-    cpawner.pawn_double(board, action, player, result)
+    cpawner.doublepush(board, action, player, result)
     return result
 
-def en_passant(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
+def enpassant(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor) -> torch.Tensor:
     result = torch.zeros_like(player, device=board.device, dtype=board.dtype)
-    cpawner.pawn_en_passant(board, action, player, result)
+    cpawner.enpassant(board, action, player, result)
     return result
 
 def count_attacks(board:torch.Tensor, player:torch.Tensor):

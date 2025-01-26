@@ -24,9 +24,9 @@ def move(stringboard,turn,rights,mv,prev):
     torchboard[:,70:75] = torch.tensor(prev[1], dtype=torch.int)
     torchboard = torchboard.to("cuda:0")
     torchaction = torch.tensor([mv[1]], dtype=torch.int)
-    torch_err = pysrc.pawn_double(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
+    torch_err = pysrc.doublepush(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
     torchplayers = torch.tensor([1 if turn == chess.WHITE else 0], dtype=torch.int)
-    torch_err = pysrc.en_passant (torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
+    torch_err = pysrc.enpassant (torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
 
     try:
         chess.Move.from_uci(mv[0])

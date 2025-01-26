@@ -3,7 +3,7 @@
 #include "../chess-attacks.cu"
 #include "../chess-consts.h"
 
-__device__ bool kingside_castle(
+__device__ bool kingside_castle_move(
     int env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
@@ -58,5 +58,5 @@ __global__ void kingside_castle_kernel(
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(0)) result[env] = kingside_castle(env, players, boards, actions);
+    if (env < boards.size(0)) result[env] = kingside_castle_move(env, players, boards, actions);
 }

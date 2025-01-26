@@ -4,14 +4,14 @@
 #include "moves/kingside-castling.cu"
 #include "moves/queenside-castling.cu"
 #include "moves/promotion.cu"
-#include "moves/pawn-move.cu"
-#include "moves/double-move.cu"
-#include "moves/en-passant.cu"
-#include "moves/knight-move.cu"
-#include "moves/king-move.cu"
-#include "moves/rook-move.cu"
-#include "moves/bishop-move.cu"
-#include "moves/queen-move.cu"
+#include "moves/pawn.cu"
+#include "moves/doublepush.cu"
+#include "moves/enpassant.cu"
+#include "moves/knight.cu"
+#include "moves/king.cu"
+#include "moves/rook.cu"
+#include "moves/bishop.cu"
+#include "moves/queen.cu"
 #include "chess-attacks.cu"
 
 __global__ void step_kernel(
@@ -33,17 +33,17 @@ __global__ void step_kernel(
         const bool is_action_ok = 
             (((actions[env][4] != 0) | (source != target))   &
             !(
-                kingside_castle (env, players, boards, actions) &
-                queenside_castle(env, players, boards, actions) &
-                pawn_promotion  (env, players, boards, actions) &
-                pawn_movement   (env, players, boards, actions) &
-                doublemove      (env, players, boards, actions) &
-                en_passant      (env, players, boards, actions) &
-                knight_movement (env, players, boards, actions) &
-                king_movement   (env, players, boards, actions) &
-                rook_movement   (env, players, boards, actions) &
-                bishop_movement (env, players, boards, actions) &
-                queen_movement  (env, players, boards, actions)
+                kingside_castle_move  ( env, players, boards, actions) &
+                queenside_castle_move ( env, players, boards, actions) &
+                promotion_move        ( env, players, boards, actions) &
+                pawn_move             ( env, players, boards, actions) &
+                doublepush_move       ( env, players, boards, actions) &
+                enpassant_move        ( env, players, boards, actions) &
+                knight_move           ( env, players, boards, actions) &
+                king_move             ( env, players, boards, actions) &
+                rook_move             ( env, players, boards, actions) &
+                bishop_move           ( env, players, boards, actions) &
+                queen_move            ( env, players, boards, actions)
              )
         );
         

@@ -20,7 +20,7 @@ def move(stringboard,turn,rights,mv):
     torchboard,torchplayers = utils.chessboard2tensor(chessboard)
     torchboard = torchboard.to("cuda:0")
     torchaction = torch.tensor([mv[1]], dtype=torch.int)
-    torch_err = pysrc.bishop_move(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
+    torch_err = pysrc.bishop(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
 
     try:
         chess.Move.from_uci(mv[0])

@@ -20,7 +20,7 @@ def move(stringboard,turn,rights,mv):
     torchboard,torchplayers = utils.chessboard2tensor(chessboard)
     torchboard = torchboard.to("cuda:0")
     torchaction = torch.tensor([mv[1]], dtype=torch.int)
-    torch_err = pysrc.pawn_double(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
+    torch_err = pysrc.knight(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
 
     try:
         chess.Move.from_uci(mv[0])
@@ -37,30 +37,14 @@ class Suite(unittest.TestCase):
     def test_black(self):
         stringboard,turn,rights,action = """
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ♞ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.BLACK, "", ("f7f5",[1,5,3,5,0])
-
-        torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
-        self.assertTrue(torch_err == chess_err == 0)
-        self.assertEqual(torch_board.tolist(), chess_board.tolist())
-
-    def test_white(self):
-        stringboard,turn,rights,action = """
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ♙ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.WHITE, "", ("f2f4",[6,5,4,5,0])
+        """, chess.BLACK, "", ("f5h6",[3,5,2,7,0])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 0)
@@ -69,32 +53,33 @@ class Suite(unittest.TestCase):
     def test_black_fail(self):
         stringboard,turn,rights,action = """
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ♟ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ♙ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ♞ 
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.BLACK, "", ("f7f5",[1,5,3,5,0])
+        """, chess.BLACK, "", ("h5b5",[3,7,3,1,0])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
-
         self.assertTrue(torch_err == chess_err == 1)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 
-    def test_white_fail(self):
+    def test_white(self):
         stringboard,turn,rights,action = """
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ♘ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ♙ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        ⭘ ⭘ ⭘ ⭘ ⭘ ♙ ⭘ ⭘
         ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-        """, chess.WHITE, "", ("f2f4",[6,5,4,5,0])
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        """, chess.WHITE, "", ("f5h6",[3,5,2,7,0])
 
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
-        self.assertTrue(torch_err == chess_err == 1)
+        self.assertTrue(torch_err == chess_err == 0)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
+
+
