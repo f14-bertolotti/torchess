@@ -50,7 +50,7 @@ __global__ void step_kernel(
         // current player king not attacked
         const unsigned char king_row = boards[env][KING_POSITION + players[env] * 2 + 0];
         const unsigned char king_col = boards[env][KING_POSITION + players[env] * 2 + 1];
-        const bool is_king_ok = !(count_attacks(env, king_row, king_col, players, boards) > 0);
+        const bool is_king_ok = count_attacks(env, king_row, king_col, players, boards) == 0;
         const unsigned char player = players[env];
         const unsigned char enemy  = (players[env] + 1) % 2;
 

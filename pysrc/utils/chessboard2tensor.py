@@ -19,13 +19,13 @@ def chessboard2tensor(chessboard: chess.Board):
             case (chess.WHITE, chess.BISHOP ): torch_board[0, 63-square] = 3
             case (chess.WHITE, chess.ROOK   ): torch_board[0, 63-square] = 4
             case (chess.WHITE, chess.QUEEN  ): torch_board[0, 63-square] = 5
-            case (chess.WHITE, chess.KING   ): torch_board[0, 63-square] = 6
+            case (chess.WHITE, chess.KING   ): torch_board[0, 63-square] = 6; torch_board[0, 75] = 7-row; torch_board[0, 76] = col
             case (chess.BLACK, chess.PAWN   ): torch_board[0, 63-square] = 7
             case (chess.BLACK, chess.KNIGHT ): torch_board[0, 63-square] = 8
             case (chess.BLACK, chess.BISHOP ): torch_board[0, 63-square] = 9
             case (chess.BLACK, chess.ROOK   ): torch_board[0, 63-square] = 10
             case (chess.BLACK, chess.QUEEN  ): torch_board[0, 63-square] = 11
-            case (chess.BLACK, chess.KING   ): torch_board[0, 63-square] = 12
+            case (chess.BLACK, chess.KING   ): torch_board[0, 63-square] = 12; torch_board[0, 77] = 7-row; torch_board[0, 78] = col
             case _ : raise ValueError(f"Invalid piece: {piece}")
 
     torch_board[0, 64:70] = 1 
