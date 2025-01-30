@@ -32,6 +32,8 @@
 #define KING_MOVED 64           // has the king moved
 #define KINGSIDE_ROOK_MOVED 66  // has the kingside rook moved
 #define QUEENSIDE_ROOK_MOVED 68 // has the queenside rook moved
-#define PREV_ACTION 70          // previous action
-#define KING_POSITION 75        // king position
-#define RULE50 79               // 50 move rule
+#define PREV1_ACTION 70         // previous action
+#define PREV2_ACTION 75         // previous action
+#define KING_POSITION 80        // king position
+#define RULE50 84               // 50 move rule
+#define THREEFOLD 85            // threefold repetition 

@@ -40,14 +40,12 @@ class Suite(unittest.TestCase):
             except Exception:
                 chess_err = 1
         
-        
             self.assertEqual(chess_err, torch_err)
             if chess_err == 0:
                 self.assertTrue(torch.equal(utils.chessboard2tensor(chess_board)[0][0,:64], torch_board[0][0,:64]))
 
             if chess_err == 0: pwn_actions.append(pwn_action)
             if torch_err == 0: fen_actions.append(fen_action)
-
 
         return fen_actions, pwn_actions
 

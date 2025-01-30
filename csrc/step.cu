@@ -42,6 +42,14 @@ __global__ void step_kernel(
         (boards[env][target] > enemy_queen)
     );
 
+    const bool is_repetition = (
+        (boards[env][PREV2_ACTION+0] == actions[env][0]) &
+        (boards[env][PREV2_ACTION+1] == actions[env][1]) &
+        (boards[env][PREV2_ACTION+2] == actions[env][2]) &
+        (boards[env][PREV2_ACTION+3] == actions[env][3]) &
+        (boards[env][PREV2_ACTION+4] == actions[env][4])
+    );
+
     if (env < boards.size(0)) {
 
         // make action
@@ -66,34 +74,41 @@ __global__ void step_kernel(
         const unsigned char player = players[env];
         const unsigned char enemy  = (players[env] + 1) % 2;
         const bool is_50 = boards[env][RULE50] >= 100;
+        const bool is_3fold = boards[env][THREEFOLD] >= 6;
 
         // zero reward if action ok
         // the action was not allowed or uncovered the king
         rewards[env][player] = (
-            (( is_action_ok &  is_king_ok) & !is_50) * +0.0f +
-            ((!is_action_ok | !is_king_ok) & !is_50) * -1.0f + 
-            (is_50) * -0.5f
+            (( is_action_ok &  is_king_ok) & !(is_50 | is_3fold)) * +0.0f +
+            ((!is_action_ok | !is_king_ok) & !(is_50 | is_3fold)) * -1.0f + 
+            (is_50 | is_3fold) * -0.5f
         );
 
         // if the player's action left the king uncovered, enemy get +1
         // otherwise nothing
         rewards[env][enemy] = (
-            (!is_king_ok & !is_50) * +1.0f + 
-            ( is_king_ok & !is_50) * +0.0f + 
-            (is_50) * -0.5f
+            (!is_king_ok & !(is_50 | is_3fold)) * +1.0f + 
+            ( is_king_ok & !(is_50 | is_3fold)) * +0.0f + 
+            (is_50 | is_3fold) * -0.5f
         );
 
         // if one makes an illegal action, or 
         // if one leave the king in check terminate the environment
-        dones[env] = !is_action_ok | !is_king_ok | is_50;
+        dones[env] = !is_action_ok | !is_king_ok | is_50 | is_3fold;
 
         // set prev action to current action
-        boards[env][PREV_ACTION+0] = actions[env][0];
-        boards[env][PREV_ACTION+1] = actions[env][1];
-        boards[env][PREV_ACTION+2] = actions[env][2];
-        boards[env][PREV_ACTION+3] = actions[env][3];
-        boards[env][PREV_ACTION+4] = actions[env][4];
-        boards[env][RULE50] = (boards[env][RULE50] + 1) * pawn_not_moved * not_capturing;
+        boards[env][PREV2_ACTION+0] = boards[env][PREV1_ACTION+0];
+        boards[env][PREV2_ACTION+1] = boards[env][PREV1_ACTION+1];
+        boards[env][PREV2_ACTION+2] = boards[env][PREV1_ACTION+2];
+        boards[env][PREV2_ACTION+3] = boards[env][PREV1_ACTION+3];
+        boards[env][PREV2_ACTION+4] = boards[env][PREV1_ACTION+4];
+        boards[env][PREV1_ACTION+0] = actions[env][0];
+        boards[env][PREV1_ACTION+1] = actions[env][1];
+        boards[env][PREV1_ACTION+2] = actions[env][2];
+        boards[env][PREV1_ACTION+3] = actions[env][3];
+        boards[env][PREV1_ACTION+4] = actions[env][4];
+        boards[env][RULE50]         = (boards[env][RULE50] + 1) * pawn_not_moved * not_capturing;
+        boards[env][THREEFOLD]      = (boards[env][THREEFOLD] + 1) * is_repetition;
     }
 }
 
