@@ -71,6 +71,13 @@ __global__ void step_kernel(
         // if one makes an illegal action, or 
         // if one leave the king in check terminate the environment
         dones[env] = !is_action_ok | !is_king_ok;
+
+        // set prev action to current action
+        boards[env][PREV_ACTION+0] = actions[env][0];
+        boards[env][PREV_ACTION+1] = actions[env][1];
+        boards[env][PREV_ACTION+2] = actions[env][2];
+        boards[env][PREV_ACTION+3] = actions[env][3];
+        boards[env][PREV_ACTION+4] = actions[env][4];
     }
 }
 

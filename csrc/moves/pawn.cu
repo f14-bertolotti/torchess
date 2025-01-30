@@ -17,16 +17,17 @@ __device__ bool pawn_move(
     const unsigned char target = actions[env][2] * 8 + actions[env][3];
     const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
     const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
+    const   signed char ahead = players[env] == WHITE ? -1 : 1;
 
     const bool is_action_ok = (
         (actions[env][4] == 0              ) & // no special action
         (boards[env][source] == player_pawn) & // moving a pawn
         (target >= 8                       ) & // not in first row (would be a promotion)
         (target <= 55                      ) & // not in last  row (would be a promotion)
-        (abs(actions[env][0]-actions[env][2]) == 1) & // at most one step
+        (actions[env][2]-actions[env][0] == ahead) & // one step ahead
         ((
-            (actions[env][1] == actions[env][3]) & // pawn moving forward
-            (boards[env][target] == EMPTY      )   // action target is empty
+            (actions[env][1] == actions[env][3]        ) & // pawn moving forward
+            (boards[env][target] == EMPTY              )   // action target is empty
         ) | (
             (actions[env][1] == actions[env][3] - 1) & // pawn capturing left
             (boards[env][target] >= enemy_pawn     ) & // action target is not empty

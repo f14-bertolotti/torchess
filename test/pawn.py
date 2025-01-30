@@ -289,3 +289,21 @@ class Suite(unittest.TestCase):
         torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(torch_err == chess_err == 1)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
+
+    def test_black_fail_backward(self):
+        stringboard,turn,rights,action = """
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ♟ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        """, chess.BLACK, "", ("b3b4",[5,1,4,1,0])
+
+        torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
+        self.assertTrue(torch_err == chess_err == 1)
+        self.assertEqual(torch_board.tolist(), chess_board.tolist())
+
+

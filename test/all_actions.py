@@ -22,7 +22,7 @@ class Suite(unittest.TestCase):
     def trymoves(self,stringboard,turn,rights):
         fen_actions = []
         pwn_actions = []
-        for pwn_action in (msg:=tqdm.tqdm(utils.pawner_actions(), total=8*8*8*8*7)):
+        for pwn_action in utils.pawner_actions():
             try:
                 fen_action = utils.pawner_action2fen_action(pwn_action, chess.WHITE)
             except ValueError: continue
@@ -40,11 +40,10 @@ class Suite(unittest.TestCase):
             except Exception:
                 chess_err = 1
         
-            msg.set_description(f"{pwn_action} {fen_action: <5}")
         
             self.assertEqual(chess_err, torch_err)
             if chess_err == 0:
-                self.assertEqual(utils.chessboard2tensor(chess_board)[0].tolist(), torch_board[0].tolist())
+                self.assertTrue(torch.equal(utils.chessboard2tensor(chess_board)[0][0,:64], torch_board[0][0,:64]))
 
             if chess_err == 0: pwn_actions.append(pwn_action)
             if torch_err == 0: fen_actions.append(fen_action)
