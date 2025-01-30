@@ -29,8 +29,9 @@
 #define PROMOTION_KNIGHT 6
 
 // special memory location
-#define KING_MOVED 64 // has the king moved 
-#define KINGSIDE_ROOK_MOVED 66 // has the kingside rook moved
+#define KING_MOVED 64           // has the king moved
+#define KINGSIDE_ROOK_MOVED 66  // has the kingside rook moved
 #define QUEENSIDE_ROOK_MOVED 68 // has the queenside rook moved
-#define PREV_ACTION 70 // previous action
-#define KING_POSITION 75
+#define PREV_ACTION 70          // previous action
+#define KING_POSITION 75        // king position
+#define RULE50 79               // 50 move rule
