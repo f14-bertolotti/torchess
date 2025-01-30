@@ -54,8 +54,8 @@ __global__ void step_kernel(
         const unsigned char player = players[env];
         const unsigned char enemy  = (players[env] + 1) % 2;
 
-         // zero reward if action ok
-         // the action was not allowed or uncovered the king
+        // zero reward if action ok
+        // the action was not allowed or uncovered the king
         rewards[env][player] = (
             ( is_action_ok &  is_king_ok) * +0.0f +
             (!is_action_ok | !is_king_ok) * -1.0f

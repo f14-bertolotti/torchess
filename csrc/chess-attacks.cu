@@ -3,7 +3,7 @@
 #include "chess-consts.h"
 #include "clamp.cu"
 
-__device__ long count_attacks(
+__device__ unsigned char count_attacks(
     int env, unsigned char row, unsigned char col, 
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards
@@ -102,7 +102,7 @@ __device__ long count_attacks(
         covered = covered | (boards[env][clamp(0,63,row * 8 + col - i)] != EMPTY);
     }
     
-    return attacks * (row <= 7 && col <= 7);
+    return attacks * (row <= 7 & col <= 7);
 
 }
 

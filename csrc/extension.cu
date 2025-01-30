@@ -203,6 +203,7 @@ torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor pl
         rewards   .packed_accessor32<float , 2 , torch::RestrictPtrTraits>() ,
         dones     .packed_accessor32<bool  , 1 , torch::RestrictPtrTraits>()
     );
+    cudaDeviceSynchronize();
 
     return boards;
 }

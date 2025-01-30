@@ -18,3 +18,5 @@ def pawner_action2fen_action(action,turn):
         case 5,_,_,_,_,_: return f"{src}{dst}b" # promotion bishop
         case 6,_,_,_,_,_: return f"{src}{dst}n" # promotion knight
         case _,_,_,_,_,_: raise ValueError(f"Invalid special action {spc}")
+
+

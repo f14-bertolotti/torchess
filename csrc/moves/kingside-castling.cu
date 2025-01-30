@@ -48,6 +48,10 @@ __device__ bool kingside_castle_move(
     boards[env][rook_target] = is_action_ok ? player_rook : boards[env][rook_target];
     boards[env][king_target] = is_action_ok ? player_king : boards[env][king_target];
 
+    // update king stored position
+    boards[env][KING_POSITION + players[env] * 2 + 0] = is_action_ok ? castle_row : boards[env][KING_POSITION + players[env] * 2 + 0];
+    boards[env][KING_POSITION + players[env] * 2 + 1] = is_action_ok ? 6          : boards[env][KING_POSITION + players[env] * 2 + 1];
+
     return !is_action_ok;
 }
 
