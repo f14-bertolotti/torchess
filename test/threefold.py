@@ -34,9 +34,8 @@ class Suite(unittest.TestCase):
         torchboard, players = pysrc.utils.chessboard2tensor(chessboard)
         for action in actions:
             reward,done = pysrc.step(torchboard, torch.tensor(action, dtype=torch.int, device="cuda:0").unsqueeze(0), players)
-            players = 1-players
-        self.assertEqual(reward[0,0].item(), -0.5)
-        self.assertEqual(reward[0,1].item(), -0.5)
+        self.assertEqual(reward[0,0].item(), 0.5)
+        self.assertEqual(reward[0,1].item(), 0.5)
         self.assertTrue(done[0].item())
 
 

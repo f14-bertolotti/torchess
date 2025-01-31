@@ -82,20 +82,22 @@ __global__ void step_kernel(
         rewards[env][player] = (
             (( is_action_ok &  is_king_ok) & !(is_50 | is_3fold)) * +0.0f +
             ((!is_action_ok | !is_king_ok) & !(is_50 | is_3fold)) * -1.0f + 
-            (is_50 | is_3fold) * -0.5f
-        );
+            (is_50 | is_3fold) * 0.5f
+        ) * !dones[env]; // reward is zero if the game was over
 
         // if the player's action left the king uncovered, enemy get +1
         // otherwise nothing
         rewards[env][enemy] = (
             (!is_king_ok & !(is_50 | is_3fold)) * +1.0f + 
             ( is_king_ok & !(is_50 | is_3fold)) * +0.0f + 
-            (is_50 | is_3fold) * -0.5f
-        );
+            (is_50 | is_3fold) * 0.5f
+        ) * !dones[env]; // reward is zero if the game was over
 
         // if one makes an illegal action, or 
-        // if one leave the king in check terminate the environment
-        dones[env] = !is_action_ok | !is_king_ok | is_50 | is_3fold;
+        // if one leave the king in check, or
+        // if the game is a draw, or
+        // if the game was already terminated
+        dones[env] = !is_action_ok | !is_king_ok | is_50 | is_3fold | dones[env];
 
         // set prev action to current action
         boards[env][prev_action+5] = boards[env][prev_action+0];
@@ -110,6 +112,9 @@ __global__ void step_kernel(
         boards[env][prev_action+4] = actions[env][4];
         boards[env][RULE50]         = (boards[env][RULE50] + 1) * pawn_not_moved * not_capturing;
         boards[env][THREEFOLD]      = (boards[env][THREEFOLD] + 1) * is_repetition;
+
+        // switch player
+        players[env] = 1 - players[env];
     }
 }
 

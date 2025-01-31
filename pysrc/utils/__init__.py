@@ -4,3 +4,5 @@ from pysrc.utils.string2chessboard import string2chessboard
 from pysrc.utils.pawner_actions    import    pawner_actions
 from pysrc.utils.pawner_action2fen_action import pawner_action2fen_action
 from pysrc.utils.fen_action2pawner_action import fen_action2pawner_action
+from pysrc.utils.parse_game import parse_game
+from pysrc.utils.games import games

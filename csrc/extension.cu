@@ -189,10 +189,6 @@ torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor pl
     if (players.dim() != 1) throw std::invalid_argument("Players tensor must be 1D, (N)");
     if (dones.dim()   != 1) throw std::invalid_argument("Dones tensor must be 1D, (N)");
 
-    // zero-fill rewards and dones
-    rewards.fill_(0);
-    dones.fill_(false);
-
     // launch the necessary block made of 128 threads
     int threads = 128;
     int blocks = (boards.size(0) + threads - 1) / threads;
