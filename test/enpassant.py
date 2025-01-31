@@ -21,7 +21,10 @@ def move(stringboard,turn,rights,mv,prev):
     chessboard.push_uci(prev[0])
 
     torchboard,torchplayers = utils.chessboard2tensor(chessboard)
-    torchboard[:,70:75] = torch.tensor(prev[1], dtype=torch.int)
+    if turn == chess.WHITE:
+        torchboard[:,70:75] = torch.tensor(prev[1], dtype=torch.int)
+    else:
+        torchboard[:,80:85] = torch.tensor(prev[1], dtype=torch.int)
     torchboard = torchboard.to("cuda:0")
     torchaction = torch.tensor([mv[1]], dtype=torch.int)
     torch_err = pysrc.doublepush(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()

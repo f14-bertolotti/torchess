@@ -18,6 +18,7 @@ class Suite(unittest.TestCase):
             #print()
             #print(tchboard[0,:64].view(8,8))
             #print(chsboard.unicode())
+            #print(tchboard[0,95])
             #print()
 
             # get actions in san and pwn format

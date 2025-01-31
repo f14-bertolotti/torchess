@@ -13,26 +13,28 @@ from test.bishop           import Suite as BishopMoveSuite
 from test.queen            import Suite as QueenMoveSuite
 from test.all_actions      import Suite as AllActionsSuite
 from test.games            import Suite as GamesSuite
+from test.threefold        import Suite as ThreefoldSuite
 
 if __name__ == "__main__":
     # Create a TestLoader instance
     loader = unittest.TestLoader()
 
     # Load tests from the test classes
-    attacks_suite     = loader.loadTestsFromTestCase(AttacksSuite)
-    kingside_suite    = loader.loadTestsFromTestCase(KingsideCastleSuite)
+    attacks_suite     = loader.loadTestsFromTestCase(AttacksSuite        )
+    kingside_suite    = loader.loadTestsFromTestCase(KingsideCastleSuite )
     queenside_suite   = loader.loadTestsFromTestCase(QueensideCastleSuite)
-    promotion_suite   = loader.loadTestsFromTestCase(PromotionSuite)
-    pawn_move_suite   = loader.loadTestsFromTestCase(PawnMoveSuite)
-    pawn_double_suite = loader.loadTestsFromTestCase(PawnDoubleSuite)
-    en_passant_suite  = loader.loadTestsFromTestCase(PawnEnPassantSuite)
-    rook_move_suite   = loader.loadTestsFromTestCase(RookMoveSuite)
-    knight_move_suite = loader.loadTestsFromTestCase(KnightMoveSuite)
-    king_move_suite   = loader.loadTestsFromTestCase(KingMoveSuite)
-    bishop_move_suite = loader.loadTestsFromTestCase(BishopMoveSuite)
-    queen_move_suite  = loader.loadTestsFromTestCase(QueenMoveSuite)
-    all_actions_suite = loader.loadTestsFromTestCase(AllActionsSuite)
-    games_suite       = loader.loadTestsFromTestCase(GamesSuite)
+    promotion_suite   = loader.loadTestsFromTestCase(PromotionSuite      )
+    pawn_move_suite   = loader.loadTestsFromTestCase(PawnMoveSuite       )
+    pawn_double_suite = loader.loadTestsFromTestCase(PawnDoubleSuite     )
+    en_passant_suite  = loader.loadTestsFromTestCase(PawnEnPassantSuite  )
+    rook_move_suite   = loader.loadTestsFromTestCase(RookMoveSuite       )
+    knight_move_suite = loader.loadTestsFromTestCase(KnightMoveSuite     )
+    king_move_suite   = loader.loadTestsFromTestCase(KingMoveSuite       )
+    bishop_move_suite = loader.loadTestsFromTestCase(BishopMoveSuite     )
+    queen_move_suite  = loader.loadTestsFromTestCase(QueenMoveSuite      )
+    all_actions_suite = loader.loadTestsFromTestCase(AllActionsSuite     )
+    games_suite       = loader.loadTestsFromTestCase(GamesSuite          )
+    threefold_suite   = loader.loadTestsFromTestCase(ThreefoldSuite      )
 
     # Combine the tests into a single suite
     test_suite = unittest.TestSuite([
@@ -50,6 +52,7 @@ if __name__ == "__main__":
         promotion_suite   ,
         all_actions_suite ,
         games_suite       ,
+        threefold_suite   ,
     ])
 
     # Run the test suite

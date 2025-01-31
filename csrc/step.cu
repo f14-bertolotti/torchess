@@ -27,6 +27,7 @@ __global__ void step_kernel(
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned char source = actions[env][0] * 8 + actions[env][1];
     const unsigned char target = actions[env][2] * 8 + actions[env][3];
+    const unsigned char prev_action = WHITE_PREV1 + 10*players[env];
     const unsigned char enemy_pawn = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
     const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
 
@@ -43,11 +44,11 @@ __global__ void step_kernel(
     );
 
     const bool is_repetition = (
-        (boards[env][PREV2_ACTION+0] == actions[env][0]) &
-        (boards[env][PREV2_ACTION+1] == actions[env][1]) &
-        (boards[env][PREV2_ACTION+2] == actions[env][2]) &
-        (boards[env][PREV2_ACTION+3] == actions[env][3]) &
-        (boards[env][PREV2_ACTION+4] == actions[env][4])
+        (boards[env][prev_action+5] == actions[env][0]) &
+        (boards[env][prev_action+6] == actions[env][1]) &
+        (boards[env][prev_action+7] == actions[env][2]) &
+        (boards[env][prev_action+8] == actions[env][3]) &
+        (boards[env][prev_action+9] == actions[env][4])
     );
 
     if (env < boards.size(0)) {
@@ -97,16 +98,16 @@ __global__ void step_kernel(
         dones[env] = !is_action_ok | !is_king_ok | is_50 | is_3fold;
 
         // set prev action to current action
-        boards[env][PREV2_ACTION+0] = boards[env][PREV1_ACTION+0];
-        boards[env][PREV2_ACTION+1] = boards[env][PREV1_ACTION+1];
-        boards[env][PREV2_ACTION+2] = boards[env][PREV1_ACTION+2];
-        boards[env][PREV2_ACTION+3] = boards[env][PREV1_ACTION+3];
-        boards[env][PREV2_ACTION+4] = boards[env][PREV1_ACTION+4];
-        boards[env][PREV1_ACTION+0] = actions[env][0];
-        boards[env][PREV1_ACTION+1] = actions[env][1];
-        boards[env][PREV1_ACTION+2] = actions[env][2];
-        boards[env][PREV1_ACTION+3] = actions[env][3];
-        boards[env][PREV1_ACTION+4] = actions[env][4];
+        boards[env][prev_action+5] = boards[env][prev_action+0];
+        boards[env][prev_action+6] = boards[env][prev_action+1];
+        boards[env][prev_action+7] = boards[env][prev_action+2];
+        boards[env][prev_action+8] = boards[env][prev_action+3];
+        boards[env][prev_action+9] = boards[env][prev_action+4];
+        boards[env][prev_action+0] = actions[env][0];
+        boards[env][prev_action+1] = actions[env][1];
+        boards[env][prev_action+2] = actions[env][2];
+        boards[env][prev_action+3] = actions[env][3];
+        boards[env][prev_action+4] = actions[env][4];
         boards[env][RULE50]         = (boards[env][RULE50] + 1) * pawn_not_moved * not_capturing;
         boards[env][THREEFOLD]      = (boards[env][THREEFOLD] + 1) * is_repetition;
     }
