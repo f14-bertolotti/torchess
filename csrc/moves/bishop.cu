@@ -1,6 +1,6 @@
 #pragma once
 #include <torch/extension.h>
-#include "../chess-consts.h"
+#include "../chess_consts.h"
 #include "../clamp.cu"
 
 __device__ bool bishop_move(

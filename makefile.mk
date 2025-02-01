@@ -7,6 +7,10 @@ venv/bin/python3:
 install: venv/bin/python3
 	python setup.py install
 
+upload:
+	venv/bin/python3 setup.py sdist
+	venv/bin/python3 -m twine upload dist/*
+
 clean:
 	rm -rf build
 	rm -rf dist

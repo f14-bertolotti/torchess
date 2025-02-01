@@ -1,26 +1,16 @@
-import pysrc.utils as utils
 import unittest
 import chess
 import torch
-import pysrc
 
-reference_board = """
-♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
-♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
-⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
-♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
-"""
+from pysrc.pawner import pawn
+from pysrc.utils import str2chs, chs2pwn
 
 def move(stringboard,turn,rights,mv):
-    chessboard = utils.str2chs(stringboard, turn, rights)
-    torchboard,torchplayers = utils.chs2pwn(chessboard)
+    chessboard = str2chs(stringboard, turn, rights)
+    torchboard,torchplayers = chs2pwn(chessboard)
     torchboard = torchboard.to("cuda:0")
     torchaction = torch.tensor([mv[1]], dtype=torch.int)
-    torch_err = pysrc.pawn(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
+    torch_err = pawn(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
 
     try:
         chess.Move.from_uci(mv[0])
@@ -29,7 +19,7 @@ def move(stringboard,turn,rights,mv):
     except Exception as e:
         chess_err = 1
     
-    return torch_err, chess_err, torchboard[:,:64], pysrc.utils.chs2pwn(chessboard)[0][:,:64]
+    return torch_err, chess_err, torchboard[:,:64], chs2pwn(chessboard)[0][:,:64]
 
 
 class Suite(unittest.TestCase): 

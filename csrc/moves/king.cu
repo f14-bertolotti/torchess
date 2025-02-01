@@ -1,6 +1,6 @@
 #pragma once
 #include <torch/extension.h>
-#include "../chess-consts.h"
+#include "../chess_consts.h"
 
 __device__ bool king_move(
     size_t env,

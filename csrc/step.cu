@@ -1,8 +1,8 @@
 #pragma once
 #include <torch/extension.h>
-#include "chess-consts.h"
-#include "moves/kingside-castling.cu"
-#include "moves/queenside-castling.cu"
+#include "chess_consts.h"
+#include "moves/kingside_castling.cu"
+#include "moves/queenside_castling.cu"
 #include "moves/promotion.cu"
 #include "moves/pawn.cu"
 #include "moves/doublepush.cu"
@@ -12,7 +12,7 @@
 #include "moves/rook.cu"
 #include "moves/bishop.cu"
 #include "moves/queen.cu"
-#include "chess-attacks.cu"
+#include "chess_attacks.cu"
 
 __global__ void step_kernel(
     torch::PackedTensorAccessor32<int  , 2 , torch::RestrictPtrTraits> boards  ,

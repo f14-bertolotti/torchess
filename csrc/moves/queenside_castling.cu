@@ -1,7 +1,7 @@
 #pragma once
 #include <torch/extension.h>
-#include "../chess-attacks.cu"
-#include "../chess-consts.h"
+#include "../chess_attacks.cu"
+#include "../chess_consts.h"
 
 
 __device__ bool queenside_castle_move(

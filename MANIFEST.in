@@ -1,2 +1,5 @@
-include README.md
-recursive-include *.py *.h *.cpp *.cu
+include readme.md
+recursive-include pysrc/ *.py 
+recursive-include csrc/ *.h 
+recursive-include csrc/ *.cpp 
+recursive-include csrc/ *.cu

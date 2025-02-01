@@ -1,3 +1,4 @@
-python-chess
+chess
+twine
+numpy
 torch
-tqdm

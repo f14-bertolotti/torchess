@@ -1,7 +1,8 @@
 #include <torch/extension.h>
-#include "chess-attacks.cu"
-#include "moves/kingside-castling.cu"
-#include "moves/queenside-castling.cu"
+#include <pybind11/pybind11.h>
+#include "chess_attacks.cu"
+#include "moves/kingside_castling.cu"
+#include "moves/queenside_castling.cu"
 #include "moves/promotion.cu"
 #include "moves/pawn.cu"
 #include "moves/doublepush.cu"

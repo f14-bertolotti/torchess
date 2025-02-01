@@ -1,8 +1,10 @@
 import unittest
-import torch
 import chess
+import torch
 import random
-import pysrc
+
+from pysrc.pawner import count_attacks
+from pysrc.utils import str2chs, chs2pwn
 
 def get_random_board(seed):
     """ generates a random board """
@@ -36,9 +38,9 @@ def generate_tests():
         def test_base(self):
             chess_board = chess.Board()
             chess_attacks,attackers = attacks_board(chess_board, chess.BLACK)
-            tensor_board,_ = pysrc.utils.chs2pwn(chess_board)
+            tensor_board,_ = chs2pwn(chess_board)
             tensor_board = tensor_board.to("cuda:0")
-            pawner_attacks = pysrc.count_attacks(tensor_board, torch.tensor([0], device="cuda:0", dtype=torch.int))
+            pawner_attacks = count_attacks(tensor_board, torch.tensor([0], device="cuda:0", dtype=torch.int))
 
             self.assertEqual(chess_attacks.tolist(), pawner_attacks.tolist())
 
@@ -54,11 +56,11 @@ def generate_tests():
             ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
             """, chess.BLACK
 
-            chessboard = pysrc.utils.str2chs(stringboard,turn,"")
-            tensorboard,tensorplayer = pysrc.utils.chs2pwn(chessboard)
+            chessboard = str2chs(stringboard,turn,"")
+            tensorboard,tensorplayer = chs2pwn(chessboard)
             tensorboard = tensorboard.to("cuda:0")
             tensorplayer = tensorplayer.to("cuda:0")
-            pawner_attacks = pysrc.count_attacks(tensorboard, tensorplayer)
+            pawner_attacks = count_attacks(tensorboard, tensorplayer)
             chess_attacks,attackers = attacks_board(chessboard, turn)
 
             self.assertEqual(chess_attacks.tolist(), pawner_attacks.tolist())
@@ -70,9 +72,9 @@ def generate_tests():
             chess_board, color = get_random_board(seed)
             chess_attacks,attackers = attacks_board(chess_board, chess.WHITE if color == 1 else chess.BLACK)
         
-            tensor_board,_ = pysrc.utils.chs2pwn(chess_board)
+            tensor_board,_ = chs2pwn(chess_board)
             tensor_board = tensor_board.to("cuda:0")
-            pawner_attacks = pysrc.count_attacks(tensor_board, torch.tensor([color], device="cuda:0", dtype=torch.int))
+            pawner_attacks = count_attacks(tensor_board, torch.tensor([color], device="cuda:0", dtype=torch.int))
 
             self.assertEqual(chess_attacks.tolist(), pawner_attacks.tolist())
 
