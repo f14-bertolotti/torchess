@@ -7,7 +7,7 @@ setup(
         CUDAExtension(
             'cpawner',
             ['csrc/extension.cu'],
-            #extra_compile_args=['-O0', '-lineinfo', '-g'],
+            extra_compile_args=['-O0', '-lineinfo', '-g'],
         )
     ],
     cmdclass={

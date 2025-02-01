@@ -4,7 +4,7 @@
 #include "../chess-consts.h"
 
 __device__ bool kingside_castle_move(
-    int env,
+    size_t env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions

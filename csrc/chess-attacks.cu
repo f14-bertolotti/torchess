@@ -4,7 +4,7 @@
 #include "clamp.cu"
 
 __device__ unsigned char count_attacks(
-    int env, unsigned char row, unsigned char col, 
+    size_t env, unsigned char row, unsigned char col, 
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards
 ) {
@@ -111,9 +111,9 @@ __global__ void attacks_kernel(
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> colors
 ) {
-    const int env = blockIdx.x;
-    const int row = threadIdx.y;
-    const int col = threadIdx.x;
+    const size_t env = blockIdx.x;
+    const unsigned char row = threadIdx.y;
+    const unsigned char col = threadIdx.x;
 
     colors[env][row * 8 + col] = count_attacks(env, row, col, players, boards);
 }

@@ -24,34 +24,36 @@ __global__ void step_kernel(
     // performs a standard action
     // returns 0 if everything is ok
     // returns 1 if the action was a standard action but the conditions were not met
-    const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    const unsigned char source = actions[env][0] * 8 + actions[env][1];
-    const unsigned char target = actions[env][2] * 8 + actions[env][3];
-    const unsigned char prev_action = WHITE_PREV1 + 10*players[env];
-    const unsigned char enemy_pawn = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
-    const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
 
-    const bool pawn_not_moved = (
-        pawn_move       (env, players, boards, actions) &
-        doublepush_move (env, players, boards, actions) &
-        enpassant_move  (env, players, boards, actions) &
-        promotion_move  (env, players, boards, actions)
-    );
-
-    const bool not_capturing = (
-        (boards[env][target] < enemy_pawn) & 
-        (boards[env][target] > enemy_queen)
-    );
-
-    const bool is_repetition = (
-        (boards[env][prev_action+5] == actions[env][0]) &
-        (boards[env][prev_action+6] == actions[env][1]) &
-        (boards[env][prev_action+7] == actions[env][2]) &
-        (boards[env][prev_action+8] == actions[env][3]) &
-        (boards[env][prev_action+9] == actions[env][4])
-    );
-
+    const size_t env = blockIdx.x * blockDim.x + threadIdx.x;
     if (env < boards.size(0)) {
+
+        const unsigned char source = actions[env][0] * 8 + actions[env][1];
+        const unsigned char target = actions[env][2] * 8 + actions[env][3];
+        const unsigned char prev_action = WHITE_PREV1 + 10*players[env];
+        const unsigned char enemy_pawn = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
+        const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
+
+        const bool pawn_not_moved = (
+            pawn_move       (env, players, boards, actions) &
+            doublepush_move (env, players, boards, actions) &
+            enpassant_move  (env, players, boards, actions) &
+            promotion_move  (env, players, boards, actions)
+        );
+
+        const bool not_capturing = (
+            (boards[env][target] < enemy_pawn) & 
+            (boards[env][target] > enemy_queen)
+        );
+
+        const bool is_repetition = (
+            (boards[env][prev_action+5] == actions[env][0]) &
+            (boards[env][prev_action+6] == actions[env][1]) &
+            (boards[env][prev_action+7] == actions[env][2]) &
+            (boards[env][prev_action+8] == actions[env][3]) &
+            (boards[env][prev_action+9] == actions[env][4])
+        );
+
 
         // make action
         const bool is_action_ok = 

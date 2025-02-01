@@ -4,7 +4,7 @@
 #include "../clamp.cu"
 
 __device__ bool bishop_move(
-    int env,
+    size_t env,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions

@@ -14,6 +14,7 @@ from test.queen            import Suite as QueenMoveSuite
 from test.all_actions      import Suite as AllActionsSuite
 from test.games            import Suite as GamesSuite
 from test.threefold        import Suite as ThreefoldSuite
+from test.batch            import Suite as BatchSuite
 
 if __name__ == "__main__":
     # Create a TestLoader instance
@@ -35,9 +36,11 @@ if __name__ == "__main__":
     all_actions_suite = loader.loadTestsFromTestCase(AllActionsSuite     )
     games_suite       = loader.loadTestsFromTestCase(GamesSuite          )
     threefold_suite   = loader.loadTestsFromTestCase(ThreefoldSuite      )
+    batch_suite       = loader.loadTestsFromTestCase(BatchSuite          )
 
     # Combine the tests into a single suite
     test_suite = unittest.TestSuite([
+        batch_suite       ,
         queen_move_suite  ,
         bishop_move_suite ,
         rook_move_suite   ,
