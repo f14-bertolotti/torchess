@@ -12,3 +12,6 @@ from pysrc.pawner import rook
 from pysrc.pawner import bishop
 from pysrc.pawner import queen
 from pysrc.pawner import step
+
+
+from pysrc.chess import step

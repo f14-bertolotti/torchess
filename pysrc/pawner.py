@@ -62,7 +62,7 @@ def count_attacks(board:torch.Tensor, player:torch.Tensor):
     return attacks
 
 def step(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor, dones:torch.Tensor|None=None):
-    dones   = torch.zeros(player.size(0), device=board.device, dtype=torch.bool) if dones is None else dones
-    rewards = torch.zeros(player.size(0),2, device=board.device, dtype=torch.float)
+    dones   = torch.zeros((player.size(0)  ), device=board.device, dtype=torch.bool)  if dones   is None else dones
+    rewards = torch.zeros((player.size(0),2), device=board.device, dtype=torch.float) if rewards is None else rewards
     cpawner.step(board, action, player, rewards, dones)
     return rewards, dones
