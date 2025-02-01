@@ -16,11 +16,11 @@ reference_board = """
 """
 
 def move(stringboard,turn,rights,mv,prev):
-    chessboard = utils.string2chessboard(stringboard, turn, rights)
+    chessboard = utils.str2chs(stringboard, turn, rights)
     chess.Move.from_uci(prev[0])
     chessboard.push_uci(prev[0])
 
-    torchboard,torchplayers = utils.chessboard2tensor(chessboard)
+    torchboard,torchplayers = utils.chs2pwn(chessboard)
     if turn == chess.WHITE:
         torchboard[:,70:75] = torch.tensor(prev[1], dtype=torch.int)
     else:
@@ -38,7 +38,7 @@ def move(stringboard,turn,rights,mv,prev):
     except Exception as e:
         chess_err = 1
     
-    return torch_err, chess_err, torchboard[:,:64], pysrc.utils.chessboard2tensor(chessboard)[0][:,:64]
+    return torch_err, chess_err, torchboard[:,:64], pysrc.utils.chs2pwn(chessboard)[0][:,:64]
 
 
 class Suite(unittest.TestCase): 

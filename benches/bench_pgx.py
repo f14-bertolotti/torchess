@@ -16,9 +16,9 @@ def main():
     init = jax.jit(jax.vmap(env.init))
     step = jax.jit(jax.vmap(env.step))
     
-    batch_size = 1024
+    batch_size = 4096
     keys = jax.random.split(jax.random.PRNGKey(42), batch_size)
-    actions = jax.random.randint(keys[0], (300, batch_size), 0, 4672)
+    actions = jax.random.randint(keys[0], (1000, batch_size), 0, 4672)
     
     # Convert actions to JAX array
     actions = jnp.array(actions)
@@ -31,7 +31,7 @@ def main():
     
     # Measure execution time
     start_time = time.time()
-    for i in range(300):
+    for i in range(actions.shape[0]):
         state = step(state, actions[i])
     end_time = time.time() - start_time
     

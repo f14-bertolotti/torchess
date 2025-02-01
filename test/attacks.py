@@ -36,7 +36,7 @@ def generate_tests():
         def test_base(self):
             chess_board = chess.Board()
             chess_attacks,attackers = attacks_board(chess_board, chess.BLACK)
-            tensor_board,_ = pysrc.utils.chessboard2tensor(chess_board)
+            tensor_board,_ = pysrc.utils.chs2pwn(chess_board)
             tensor_board = tensor_board.to("cuda:0")
             pawner_attacks = pysrc.count_attacks(tensor_board, torch.tensor([0], device="cuda:0", dtype=torch.int))
 
@@ -54,8 +54,8 @@ def generate_tests():
             ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
             """, chess.BLACK
 
-            chessboard = pysrc.utils.string2chessboard(stringboard,turn,"")
-            tensorboard,tensorplayer = pysrc.utils.chessboard2tensor(chessboard)
+            chessboard = pysrc.utils.str2chs(stringboard,turn,"")
+            tensorboard,tensorplayer = pysrc.utils.chs2pwn(chessboard)
             tensorboard = tensorboard.to("cuda:0")
             tensorplayer = tensorplayer.to("cuda:0")
             pawner_attacks = pysrc.count_attacks(tensorboard, tensorplayer)
@@ -70,7 +70,7 @@ def generate_tests():
             chess_board, color = get_random_board(seed)
             chess_attacks,attackers = attacks_board(chess_board, chess.WHITE if color == 1 else chess.BLACK)
         
-            tensor_board,_ = pysrc.utils.chessboard2tensor(chess_board)
+            tensor_board,_ = pysrc.utils.chs2pwn(chess_board)
             tensor_board = tensor_board.to("cuda:0")
             pawner_attacks = pysrc.count_attacks(tensor_board, torch.tensor([color], device="cuda:0", dtype=torch.int))
 

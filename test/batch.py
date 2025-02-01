@@ -12,10 +12,8 @@ class Suite(unittest.TestCase):
         moves = torch.nn.utils.rnn.pad_sequence(moves, batch_first=True)
         moves = torch.cat([moves, torch.zeros((moves.size(0),1,5), dtype=torch.int, device="cuda:0")], dim=1)
 
-        board, player = pysrc.utils.chessboard2tensor(chess.Board())
+        board, player = pysrc.utils.chs2pwn(chess.Board())
         board, player = board.repeat(moves.size(0),1), player.repeat(moves.size(0))
-
-        print(moves.shape, player.shape, board.shape)
 
         donestack, rewardstack, dones = [], [], None
         for i in range(moves.size(1)):

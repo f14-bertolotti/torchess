@@ -1,8 +1,8 @@
 import chess
 import torch
 
-def fen_action2pawner_action(action,board,turn)->torch.Tensor:
-    """Convert a FEN action to a pawner action."""
+def san2pwn(action,board,turn)->torch.Tensor:
+    """Convert a SAN action to a pawner action."""
     src, dst = action[:2], action[2:]
     src_row, src_col = 8-int(src[1]), ord(src[0])-97
     dst_row, dst_col = 8-int(dst[1]), ord(dst[0])-97

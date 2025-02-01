@@ -4,7 +4,7 @@ import chess
 KING_POSITION = 90
 CASTLING_RIGHTS = 64
 
-def chessboard2tensor(chessboard: chess.Board):
+def chs2pwn(chessboard: chess.Board):
     """ given a chess boards returns a torch tensor representation of it """
 
     torch_board = torch.zeros(1, 100, dtype=torch.int)

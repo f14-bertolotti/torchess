@@ -12,7 +12,7 @@ def parse_game(game:str):
     parsed_moves = []
     for move in moves:
         move = board.parse_san(move)
-        parsed_moves.append(pysrc.utils.fen_action2pawner_action(str(move), board, board.turn))
+        parsed_moves.append(pysrc.utils.san2pwn(str(move), board, board.turn))
         board.push(move)
     parsed_moves = torch.stack(parsed_moves)
 

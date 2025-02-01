@@ -9,46 +9,28 @@ class Suite(unittest.TestCase):
     def rungame(self, moves):
 
         chsboard = chess.Board()
-        tchboard,tchplayer = pysrc.utils.chessboard2tensor(chsboard)
+        tchboard,tchplayer = pysrc.utils.chs2pwn(chsboard)
 
         # play game on both boards
         for i,move in enumerate(moves):
-            #print(i,end=" ")
-            #print()
-            #print(tchboard[0,:64].view(8,8))
-            #print(chsboard.unicode())
-            #print(tchboard[0,95])
-            #print()
 
             # get actions in san and pwn format
             san = str(chsboard.parse_san(move))
-            pwn = pysrc.utils.fen_action2pawner_action(san, chsboard, chsboard.turn)
+            pwn = pysrc.utils.san2pwn(san, chsboard, chsboard.turn)
 
             # advance chess and pawner boards
             rew,_ = pysrc.step(tchboard,pwn.unsqueeze(0),tchplayer)
             chsboard.push_san(move)
 
-            #if not torch.equal(pysrc.utils.chessboard2tensor(chsboard)[0][:,:64], tchboard[:,:64]) or rew[0,0] != 0:
-            #    print("="*10,i,"="*10)
-            #    print(san, pwn)
-            #    print(pysrc.utils.chessboard2tensor(chsboard)[0][:,:64].view(8,8))
-            #    print(tchboard[:,:64].view(8,8))
-            #    print(rew)
-            #    print(chsboard.unicode())
-
-
             # compare chess and pawner boards
-            self.assertTrue(torch.equal(pysrc.utils.chessboard2tensor(chsboard)[0][:,:64], tchboard[:,:64]))
+            self.assertTrue(torch.equal(pysrc.utils.chs2pwn(chsboard)[0][:,:64], tchboard[:,:64]))
             self.assertTrue(rew[0,0] == 0)
             self.assertTrue(rew[0,1] == 0)
 
         # check no other action is possible
-        for pwn_action in pysrc.utils.pawner_actions():
-            #print(pwn_action)
-            #print(chsboard.unicode())
+        for pwn_action in pysrc.utils.pwn_actions():
             pwn = torch.tensor([[*pwn_action]], dtype=torch.int, device="cuda:0")
             rew, _ = pysrc.step(tchboard.clone(),pwn,tchplayer.clone())
-            #print(rew)
             
             self.assertTrue(rew[0,tchplayer[0].item()].item() == -1)
             

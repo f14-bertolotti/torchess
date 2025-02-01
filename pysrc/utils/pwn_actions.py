@@ -1,4 +1,4 @@
-def pawner_actions():
+def pwn_actions():
     """Return a list of all actions."""
 
     for src_row in range(8):

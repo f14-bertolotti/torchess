@@ -22,13 +22,13 @@ class Suite(unittest.TestCase):
     def trymoves(self,stringboard,turn,rights):
         fen_actions = []
         pwn_actions = []
-        for pwn_action in utils.pawner_actions():
+        for pwn_action in utils.pwn_actions():
             try:
-                fen_action = utils.pawner_action2fen_action(pwn_action, chess.WHITE)
+                fen_action = utils.pwn2san(pwn_action, chess.WHITE)
             except ValueError: continue
         
-            chess_board = utils.string2chessboard(stringboard, turn, rights)
-            torch_board = utils.chessboard2tensor(chess_board)
+            chess_board = utils.str2chs(stringboard, turn, rights)
+            torch_board = utils.chs2pwn(chess_board)
 
             torch_err = pysrc.step(torch_board[0], torch.tensor([pwn_action], dtype=torch.int, device="cuda:0"), torch_board[1])[0]
             torch_err = -int(torch_err[0,0 if turn == chess.WHITE else 1].item())
@@ -42,7 +42,7 @@ class Suite(unittest.TestCase):
         
             self.assertEqual(chess_err, torch_err)
             if chess_err == 0:
-                self.assertTrue(torch.equal(utils.chessboard2tensor(chess_board)[0][0,:64], torch_board[0][0,:64]))
+                self.assertTrue(torch.equal(utils.chs2pwn(chess_board)[0][0,:64], torch_board[0][0,:64]))
 
             if chess_err == 0: pwn_actions.append(pwn_action)
             if torch_err == 0: fen_actions.append(fen_action)

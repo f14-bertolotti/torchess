@@ -16,8 +16,8 @@ reference_board = """
 """
 
 def move(stringboard,turn,rights,mv):
-    chessboard = utils.string2chessboard(stringboard, turn, rights)
-    torchboard,torchplayers = utils.chessboard2tensor(chessboard)
+    chessboard = utils.str2chs(stringboard, turn, rights)
+    torchboard,torchplayers = utils.chs2pwn(chessboard)
     torchboard = torchboard.to("cuda:0")
     torchaction = torch.tensor([mv[1]], dtype=torch.int)
     torch_err = pysrc.pawn(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
@@ -29,7 +29,7 @@ def move(stringboard,turn,rights,mv):
     except Exception as e:
         chess_err = 1
     
-    return torch_err, chess_err, torchboard[:,:64], pysrc.utils.chessboard2tensor(chessboard)[0][:,:64]
+    return torch_err, chess_err, torchboard[:,:64], pysrc.utils.chs2pwn(chessboard)[0][:,:64]
 
 
 class Suite(unittest.TestCase): 

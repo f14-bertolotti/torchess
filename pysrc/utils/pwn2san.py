@@ -1,6 +1,6 @@
 import chess
 
-def pawner_action2fen_action(action,turn):
+def pwn2san(action,turn):
     """Convert a pawner action to a FEN action."""
     src_row, src_col, dst_row, dst_col, spc = action
     src_row, dst_row = 7 - src_row, 7 - dst_row

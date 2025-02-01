@@ -1,7 +1,7 @@
 from pysrc.utils import symbol2letter
 import chess
 
-def string2chessboard(string:str, turn, rights) -> chess.Board:
+def str2chs(string:str, turn, rights) -> chess.Board:
     board = chess.Board(None)
     for i,c in enumerate(string.replace(" ","").replace("\n","")): 
         row = i // 8
