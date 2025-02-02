@@ -135,10 +135,9 @@ Actions are encoded using **algebraic notation**, specifying:
 - **Reward system:**  
   - **Invalid move:** `-1` penalty.  
   - **Invalid move while in check:** Opponent receives `+1`.  
-  - **Valid move with no further legal moves for the opponent:** Game ends.  
   - **50-move rule (no captures/promotions in 50 turns):** Draw (`+0.5` for both players).  
 
-> **Note:** Checkmate and stalemate are not explicitly checked to maintain speed. Instead, a game ends when a player has no valid moves.  
+> **Note:** Checkmate and stalemate are not explicitly checked to maintain speed. When a player checkmate the other, the game naturally ends the next turn because the losing player has no valid move to make.
 
 ---
 
