@@ -29,6 +29,23 @@ class Suite(unittest.TestCase):
         self.assertTrue(torch.equal(donestack.logical_not().int().sum(0), lens))
         self.assertTrue(rewardstack.sum(0).sum() == 0)
 
+    def test_1(self):
+        from pysrc.torchess import step, init
+        
+        actions = [parse_game(games[0])] * 128
+        actions = torch.nn.utils.rnn.pad_sequence(actions, batch_first=True)
+        actions = torch.cat([actions, torch.zeros((actions.size(0),1,5), dtype=torch.int, device="cuda:0")], dim=1)
+
+        boards,players = init(128)
+        dones, rewards = torch.zeros(100, dtype=torch.bool, device="cuda:0"), torch.zeros(100,2,dtype=torch.float, device="cuda:0")
+
+        for i in range(actions.size(1)):
+            step(boards, actions[:,i], players, dones, rewards)
+
+        self.assertTrue(dones.all())
+        self.assertTrue((rewards[:,0] == -1).all())
+        self.assertTrue((rewards[:,1] == +1).all())
+
 
 if __name__ == '__main__':
     unittest.main()
