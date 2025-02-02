@@ -30,14 +30,14 @@ def step(board:torch.Tensor, action:torch.Tensor, player:torch.Tensor, dones:tor
     cpawner.step(board, action, player, rewards, dones)
     return None
 
-def init(envs:int) -> torch.Tensor:
+def init(envs:int) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Initialize the environment
     envs: (batch) - the number of environments to initialize
     """
     return baseboard.repeat(envs,1), baseplayer.repeat(envs)
 
-def reset(boards:torch.Tensor, players:torch.Tensor, mask:torch.Tensor|None=None) -> torch.Tensor:
+def reset(boards:torch.Tensor, players:torch.Tensor, mask:torch.Tensor|None=None) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Reset the environment
     envs: (batch) - the number of environments to reset
