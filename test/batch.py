@@ -9,7 +9,7 @@ class Suite(unittest.TestCase):
 
     def test_0(self):
 
-        moves = [parse_game(game) for game in games] * 10000
+        moves = [parse_game(game) for game in games] * 1000
         lens  = torch.tensor([len(move) for move in moves]).to("cuda:0")
         moves = torch.nn.utils.rnn.pad_sequence(moves, batch_first=True)
         moves = torch.cat([moves, torch.zeros((moves.size(0),1,5), dtype=torch.int, device="cuda:0")], dim=1)

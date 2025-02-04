@@ -1,15 +1,10 @@
-import time
 import jax
+import jax.numpy as jnp
 import pgx
-
-
+import time
+ 
 def main():
-
-    import jax
-    import jax.numpy as jnp
-    import pgx
-    import time
-    
+   
     jax.config.update("jax_platform_name", "gpu")  # Ensure GPU usage
     
     env = pgx.make("chess")

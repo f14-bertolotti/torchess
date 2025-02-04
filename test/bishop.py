@@ -2,7 +2,7 @@ import unittest
 import chess
 import torch
 
-from pysrc.pawner import doublepush
+from pysrc.pawner import bishop
 from pysrc.utils import str2chs, chs2pwn
 
 def move(stringboard,turn,rights,mv):
