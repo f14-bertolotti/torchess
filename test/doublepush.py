@@ -9,7 +9,7 @@ def move(stringboard,turn,rights,mv):
     chessboard = str2chs(stringboard, turn, rights)
     torchboard,torchplayers = chs2pwn(chessboard)
     torchboard = torchboard.to("cuda:0")
-    torchaction = torch.tensor([mv[1]], dtype=torch.int)
+    torchaction = torch.tensor(mv[1], dtype=torch.int).unsqueeze(1)
     torch_err = doublepush(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
 
     try:

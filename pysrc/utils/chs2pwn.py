@@ -45,5 +45,5 @@ def chs2pwn(chessboard: chess.Board):
         torch_board[0, CASTLING_RIGHTS+1] = 0
         torch_board[0, CASTLING_RIGHTS+5] = 0
 
-    return torch_board.to("cuda:0"), players.to("cuda:0")
+    return torch_board.transpose(0,1).to("cuda:0"), players.to("cuda:0")
 

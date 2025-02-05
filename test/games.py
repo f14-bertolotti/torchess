@@ -17,23 +17,23 @@ class Suite(unittest.TestCase):
 
             # get actions in san and pwn format
             san = str(chsboard.parse_san(move))
-            pwn = san2pwn(san, chsboard, chsboard.turn)
+            pwn = san2pwn(san, chsboard, chsboard.turn).unsqueeze(1)
 
             # advance chess and pawner boards
-            rew,_ = step(tchboard,pwn.unsqueeze(0),tchplayer)
+            rew,_ = step(tchboard,pwn,tchplayer)
             chsboard.push_san(move)
 
             # compare chess and pawner boards
-            self.assertTrue(torch.equal(chs2pwn(chsboard)[0][:,:64], tchboard[:,:64]))
+            self.assertTrue(torch.equal(chs2pwn(chsboard)[0][:64,:], tchboard[:64,:]))
             self.assertTrue(rew[0,0] == 0)
-            self.assertTrue(rew[0,1] == 0)
+            self.assertTrue(rew[1,0] == 0)
 
         # check no other action is possible
         for pwn_action in pwn_actions():
-            pwn = torch.tensor([[*pwn_action]], dtype=torch.int, device="cuda:0")
+            pwn = torch.tensor([*pwn_action], dtype=torch.int, device="cuda:0").unsqueeze(-1)
             rew, _ = step(tchboard.clone(),pwn,tchplayer.clone())
             
-            self.assertTrue(rew[0,tchplayer[0].item()].item() == -1)
+            self.assertTrue(rew[tchplayer[0].item(),0].item() == -1)
             
     def test_1(self):
         moves = games[0].split(" ")

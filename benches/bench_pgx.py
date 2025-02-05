@@ -20,6 +20,9 @@ def main():
     
     # Ensure state is a JAX array
     state = init(keys)
+
+    # print state device
+    print(state.observation.device)
     
     # Force GPU warm-up (compilation overhead)
     state = step(state, actions[0])  # Run once before timing

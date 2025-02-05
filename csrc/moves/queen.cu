@@ -15,14 +15,14 @@ __device__ bool queen_move(
     // this routine does not verify if the queen is in check
     
     const unsigned char player_queen = players[env] * 6 + WHITE_QUEEN;
-    const unsigned char source = actions[env][0] * 8 + actions[env][1];
-    const unsigned char target = actions[env][2] * 8 + actions[env][3];
+    const unsigned char source = actions[0][env] * 8 + actions[1][env];
+    const unsigned char target = actions[2][env] * 8 + actions[3][env];
     const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
     const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
-    const unsigned char srcrow = actions[env][0];
-    const unsigned char srccol = actions[env][1];
-    const unsigned char tgtrow = actions[env][2];
-    const unsigned char tgtcol = actions[env][3];
+    const unsigned char srcrow = actions[0][env];
+    const unsigned char srccol = actions[1][env];
+    const unsigned char tgtrow = actions[2][env];
+    const unsigned char tgtcol = actions[3][env];
 
     const char dir_x = (+1) * (srccol < tgtcol) + (-1) * (srccol > tgtcol);
     const char dir_y = (+1) * (srcrow < tgtrow) + (-1) * (srcrow > tgtrow);
@@ -30,24 +30,24 @@ __device__ bool queen_move(
     bool encountered_target = false;
     for (int i = 1; i < 8; i++) {
         encountered_target = encountered_target | ((srcrow + i * dir_y == tgtrow) & (srccol + i * dir_x == tgtcol));
-        is_jumping_over = is_jumping_over | ((!encountered_target) & (boards[env][clamp(0,63,(srcrow + i * dir_y) * 8 + (srccol + i * dir_x))] != EMPTY));
+        is_jumping_over = is_jumping_over | ((!encountered_target) & (boards[clamp(0,63,(srcrow + i * dir_y) * 8 + (srccol + i * dir_x))][env] != EMPTY));
     }
 
     const bool is_action_ok = (
-        (actions[env][4] == 0)                & // no special action
-        (boards[env][source] == player_queen) & // source is a queen
+        (actions[4][env] == 0)                & // no special action
+        (boards[source][env] == player_queen) & // source is a queen
         !is_jumping_over & (                    // queen is not jumping over other pieces
             ((srcrow == tgtrow) & (srccol <= 7)) |
             ((srccol == tgtcol) & (srcrow <= 7)) |
             (abs(srcrow - tgtrow) == abs(srccol - tgtcol))
         ) & ( // target is a valid queen movement
-            (boards[env][target] == EMPTY) |
-            ((boards[env][target] >= enemy_pawn) & (boards[env][target] <= enemy_queen))
+            (boards[target][env] == EMPTY) |
+            ((boards[target][env] >= enemy_pawn) & (boards[target][env] <= enemy_queen))
         ) // target is empty or enemy
     );
 
-    boards[env][target] = is_action_ok ? player_queen : boards[env][target];
-    boards[env][source] = is_action_ok ? EMPTY       : boards[env][source];
+    boards[target][env] = is_action_ok ? player_queen : boards[target][env];
+    boards[source][env] = is_action_ok ? EMPTY       : boards[source][env];
 
     return !is_action_ok;
 }
@@ -59,7 +59,7 @@ __global__ void queen_kernel(
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(0)) result[env] = queen_move(env, players, boards, actions);
+    if (env < boards.size(1)) result[env] = queen_move(env, players, boards, actions);
 }
 
 

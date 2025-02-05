@@ -20,8 +20,8 @@ class Suite(unittest.TestCase):
             chess_board = str2chs(stringboard, turn, rights)
             torch_board = chs2pwn(chess_board)
 
-            torch_err = step(torch_board[0], torch.tensor([pwn_action], dtype=torch.int, device="cuda:0"), torch_board[1])[0]
-            torch_err = -int(torch_err[0,0 if turn == chess.WHITE else 1].item())
+            torch_err = step(torch_board[0], torch.tensor(pwn_action, dtype=torch.int, device="cuda:0").unsqueeze(1), torch_board[1])[0]
+            torch_err = -int(torch_err[0 if turn == chess.WHITE else 1,0].item())
 
             try:
                 chess.Move.from_uci(fen_action)

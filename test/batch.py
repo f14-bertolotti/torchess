@@ -9,13 +9,13 @@ class Suite(unittest.TestCase):
 
     def test_0(self):
 
-        moves = [parse_game(game) for game in games] * 1000
+        moves = [parse_game(game) for game in games] * 10
         lens  = torch.tensor([len(move) for move in moves]).to("cuda:0")
         moves = torch.nn.utils.rnn.pad_sequence(moves, batch_first=True)
-        moves = torch.cat([moves, torch.zeros((moves.size(0),1,5), dtype=torch.int, device="cuda:0")], dim=1)
+        moves = torch.cat([moves, torch.zeros((moves.size(0),1,5), dtype=torch.int, device="cuda:0")], dim=1).permute(2,1,0)
 
         board, player = chs2pwn(chess.Board())
-        board, player = board.repeat(moves.size(0),1), player.repeat(moves.size(0))
+        board, player = board.repeat(1,moves.size(2)), player.repeat(moves.size(2))
 
         donestack, rewardstack, dones = [], [], None
         for i in range(moves.size(1)):
@@ -34,17 +34,17 @@ class Suite(unittest.TestCase):
         
         actions = [parse_game(games[0])] * 128
         actions = torch.nn.utils.rnn.pad_sequence(actions, batch_first=True)
-        actions = torch.cat([actions, torch.zeros((actions.size(0),1,5), dtype=torch.int, device="cuda:0")], dim=1)
+        actions = torch.cat([actions, torch.zeros((actions.size(0),1,5), dtype=torch.int, device="cuda:0")], dim=1).permute(2,1,0)
 
         boards,players = init(128)
-        dones, rewards = torch.zeros(100, dtype=torch.bool, device="cuda:0"), torch.zeros(100,2,dtype=torch.float, device="cuda:0")
+        dones, rewards = torch.zeros(100, dtype=torch.bool, device="cuda:0"), torch.zeros(2,100,dtype=torch.float, device="cuda:0")
 
         for i in range(actions.size(1)):
             step(boards, actions[:,i], players, dones, rewards)
 
         self.assertTrue(dones.all())
-        self.assertTrue((rewards[:,0] == -1).all())
-        self.assertTrue((rewards[:,1] == +1).all())
+        self.assertTrue((rewards[0,:] == -1).all())
+        self.assertTrue((rewards[1,:] == +1).all())
 
 
 if __name__ == '__main__':

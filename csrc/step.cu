@@ -26,10 +26,10 @@ __global__ void step_kernel(
     // returns 1 if the action was a standard action but the conditions were not met
 
     const size_t env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(0)) {
+    if (env < boards.size(1)) {
 
-        const unsigned char source = actions[env][0] * 8 + actions[env][1];
-        const unsigned char target = actions[env][2] * 8 + actions[env][3];
+        const unsigned char source = actions[0][env] * 8 + actions[1][env];
+        const unsigned char target = actions[2][env] * 8 + actions[3][env];
         const unsigned char prev_action = WHITE_PREV1 + 10*players[env];
         const unsigned char enemy_pawn = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
         const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
@@ -42,22 +42,22 @@ __global__ void step_kernel(
         );
 
         const bool not_capturing = (
-            (boards[env][target] < enemy_pawn) & 
-            (boards[env][target] > enemy_queen)
+            (boards[target][env] < enemy_pawn) & 
+            (boards[target][env] > enemy_queen)
         );
 
         const bool is_repetition = (
-            (boards[env][prev_action+5] == actions[env][0]) &
-            (boards[env][prev_action+6] == actions[env][1]) &
-            (boards[env][prev_action+7] == actions[env][2]) &
-            (boards[env][prev_action+8] == actions[env][3]) &
-            (boards[env][prev_action+9] == actions[env][4])
+            (boards[prev_action+5][env] == actions[0][env]) &
+            (boards[prev_action+6][env] == actions[1][env]) &
+            (boards[prev_action+7][env] == actions[2][env]) &
+            (boards[prev_action+8][env] == actions[3][env]) &
+            (boards[prev_action+9][env] == actions[4][env])
         );
 
 
         // make action
         const bool is_action_ok = 
-            (((actions[env][4] != 0) | (source != target)) &
+            (((actions[4][env] != 0) | (source != target)) &
             !(
                 kingside_castle_move  ( env, players, boards, actions) &
                 queenside_castle_move ( env, players, boards, actions) &
@@ -71,17 +71,17 @@ __global__ void step_kernel(
         );
         
         // current player king not attacked
-        const unsigned char king_row = boards[env][KING_POSITION + players[env] * 2 + 0];
-        const unsigned char king_col = boards[env][KING_POSITION + players[env] * 2 + 1];
+        const unsigned char king_row = boards[KING_POSITION + players[env] * 2 + 0][env];
+        const unsigned char king_col = boards[KING_POSITION + players[env] * 2 + 1][env];
         const bool is_king_ok = count_attacks(env, king_row, king_col, players, boards) == 0;
         const unsigned char player = players[env];
         const unsigned char enemy  = (players[env] + 1) % 2;
-        const bool is_50 = boards[env][RULE50] >= 100;
-        const bool is_3fold = boards[env][THREEFOLD] >= 6;
+        const bool is_50 = boards[RULE50][env] >= 100;
+        const bool is_3fold = boards[THREEFOLD][env] >= 6;
 
         // zero reward if action ok
         // the action was not allowed or uncovered the king
-        rewards[env][player] = (
+        rewards[player][env] = (
             (( is_action_ok &  is_king_ok) & !(is_50 | is_3fold)) * +0.0f +
             ((!is_action_ok | !is_king_ok) & !(is_50 | is_3fold)) * -1.0f + 
             (is_50 | is_3fold) * 0.5f
@@ -89,7 +89,7 @@ __global__ void step_kernel(
 
         // if the player's action left the king uncovered, enemy get +1
         // otherwise nothing
-        rewards[env][enemy] = (
+        rewards[enemy][env] = (
             (!is_king_ok & !(is_50 | is_3fold)) * +1.0f + 
             ( is_king_ok & !(is_50 | is_3fold)) * +0.0f + 
             (is_50 | is_3fold) * 0.5f
@@ -102,18 +102,18 @@ __global__ void step_kernel(
         dones[env] = !is_action_ok | !is_king_ok | is_50 | is_3fold | dones[env];
 
         // set prev action to current action
-        boards[env][prev_action+5] = boards[env][prev_action+0];
-        boards[env][prev_action+6] = boards[env][prev_action+1];
-        boards[env][prev_action+7] = boards[env][prev_action+2];
-        boards[env][prev_action+8] = boards[env][prev_action+3];
-        boards[env][prev_action+9] = boards[env][prev_action+4];
-        boards[env][prev_action+0] = actions[env][0];
-        boards[env][prev_action+1] = actions[env][1];
-        boards[env][prev_action+2] = actions[env][2];
-        boards[env][prev_action+3] = actions[env][3];
-        boards[env][prev_action+4] = actions[env][4];
-        boards[env][RULE50]         = (boards[env][RULE50] + 1) * pawn_not_moved * not_capturing;
-        boards[env][THREEFOLD]      = (boards[env][THREEFOLD] + 1) * is_repetition;
+        boards[prev_action+5][env] = boards[prev_action+0][env];
+        boards[prev_action+6][env] = boards[prev_action+1][env];
+        boards[prev_action+7][env] = boards[prev_action+2][env];
+        boards[prev_action+8][env] = boards[prev_action+3][env];
+        boards[prev_action+9][env] = boards[prev_action+4][env];
+        boards[prev_action+0][env] = actions[0][env];
+        boards[prev_action+1][env] = actions[1][env];
+        boards[prev_action+2][env] = actions[2][env];
+        boards[prev_action+3][env] = actions[3][env];
+        boards[prev_action+4][env] = actions[4][env];
+        boards[RULE50][env]        = (boards[RULE50][env] + 1) * pawn_not_moved * not_capturing;
+        boards[THREEFOLD][env]     = (boards[THREEFOLD][env] + 1) * is_repetition;
 
         // switch player
         players[env] = 1 - players[env];

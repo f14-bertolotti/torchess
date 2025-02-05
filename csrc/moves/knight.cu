@@ -13,18 +13,18 @@ __device__ bool knight_move(
     // returns 1 if the action was not applicable
     
     const unsigned char player_knight = players[env] * 6 + WHITE_KNIGHT;
-    const unsigned char source = actions[env][0] * 8 + actions[env][1];
-    const unsigned char target = actions[env][2] * 8 + actions[env][3];
+    const unsigned char source = actions[0][env] * 8 + actions[1][env];
+    const unsigned char target = actions[2][env] * 8 + actions[3][env];
     const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
     const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
-    const unsigned char srcrow = actions[env][0];
-    const unsigned char srccol = actions[env][1];
-    const unsigned char tgtrow = actions[env][2];
-    const unsigned char tgtcol = actions[env][3];
+    const unsigned char srcrow = actions[0][env];
+    const unsigned char srccol = actions[1][env];
+    const unsigned char tgtrow = actions[2][env];
+    const unsigned char tgtcol = actions[3][env];
 
     const bool is_action_ok = (
-        (actions[env][4] == 0)                 & // no special action
-        (boards[env][source] == player_knight) & // source is a knight
+        (actions[4][env] == 0)                 & // no special action
+        (boards[source][env] == player_knight) & // source is a knight
         (
             ((srcrow == tgtrow + 2) & (srccol == tgtcol + 1) & (tgtrow + 2 <= 7) & (tgtcol + 1 <= 7)) |
             ((srcrow == tgtrow + 2) & (srccol == tgtcol - 1) & (tgtrow + 2 <= 7) & (tgtcol - 1 >= 0)) |
@@ -35,14 +35,14 @@ __device__ bool knight_move(
             ((srcrow == tgtrow - 1) & (srccol == tgtcol + 2) & (tgtrow - 1 >= 0) & (tgtcol + 2 <= 7)) |
             ((srcrow == tgtrow - 1) & (srccol == tgtcol - 2) & (tgtrow - 1 >= 0) & (tgtcol - 2 >= 0))
         ) & ( // target is a valid knight movement
-            (boards[env][target] == EMPTY) |
-            ((boards[env][target] >= enemy_pawn) & 
-             (boards[env][target] <= enemy_queen))
+            (boards[target][env] == EMPTY) |
+            ((boards[target][env] >= enemy_pawn) & 
+             (boards[target][env] <= enemy_queen))
         ) // target is empty or enemy
     );
 
-    boards[env][target] = is_action_ok ? player_knight : boards[env][target];
-    boards[env][source] = is_action_ok ? EMPTY         : boards[env][source];
+    boards[target][env] = is_action_ok ? player_knight : boards[target][env];
+    boards[source][env] = is_action_ok ? EMPTY         : boards[source][env];
 
     return !is_action_ok;
 }
@@ -54,7 +54,7 @@ __global__ void knight_kernel(
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(0)) result[env] = knight_move(env, players, boards, actions);
+    if (env < boards.size(1)) result[env] = knight_move(env, players, boards, actions);
 }
 
 

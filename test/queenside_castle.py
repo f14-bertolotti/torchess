@@ -9,7 +9,7 @@ def move(stringboard,turn,rights,move):
     chessboard = str2chs(stringboard, turn, rights)
     torchboard,torchplayers = chs2pwn(chessboard)
     torchboard = torchboard.to("cuda:0")
-    torchaction = torch.tensor([[0,0,0,0,2]], dtype=torch.int)
+    torchaction = torch.tensor([0,0,0,0,2], dtype=torch.int).unsqueeze(1)
     torch_err = queenside_castling(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
 
     try:
@@ -19,7 +19,7 @@ def move(stringboard,turn,rights,move):
     except Exception as e:
         chess_err = 1
     
-    return torch_err, chess_err, torchboard[:,:64], chs2pwn(chessboard)[0][:,:64]
+    return torch_err, chess_err, torchboard[:64,:], chs2pwn(chessboard)[0][:64,:]
 
 
 class Suite(unittest.TestCase): 

@@ -14,18 +14,18 @@ __device__ bool king_move(
     // this routine does not verify if the king is in check
     
     const unsigned char player_king = players[env] * 6 + WHITE_KING;
-    const unsigned char source = actions[env][0] * 8 + actions[env][1];
-    const unsigned char target = actions[env][2] * 8 + actions[env][3];
+    const unsigned char source = actions[0][env] * 8 + actions[1][env];
+    const unsigned char target = actions[2][env] * 8 + actions[3][env];
     const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
     const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
-    const unsigned char srcrow = actions[env][0];
-    const unsigned char srccol = actions[env][1];
-    const unsigned char tgtrow = actions[env][2];
-    const unsigned char tgtcol = actions[env][3];
+    const unsigned char srcrow = actions[0][env];
+    const unsigned char srccol = actions[1][env];
+    const unsigned char tgtrow = actions[2][env];
+    const unsigned char tgtcol = actions[3][env];
 
     const bool is_action_ok = (
-        (actions[env][4] == 0)               & // no special action
-        (boards[env][source] == player_king) & // source is a king
+        (actions[4][env] == 0)               & // no special action
+        (boards[source][env] == player_king) & // source is a king
         (
             ((srcrow == tgtrow + 1) & (srccol == tgtcol + 1) & (tgtrow + 1 <= 7) & (tgtcol + 1 <= 7)) |
             ((srcrow == tgtrow + 1) & (srccol == tgtcol - 1) & (tgtrow + 1 <= 7) & (tgtcol - 1 >= 0)) |
@@ -36,16 +36,16 @@ __device__ bool king_move(
             ((srccol == tgtcol + 1) & (srcrow == tgtrow    ) & (tgtcol + 1 <= 7)) |
             ((srccol == tgtcol - 1) & (srcrow == tgtrow    ) & (tgtcol - 1 >= 0))
         ) & ( // target is a valid king movement
-            (boards[env][target] == EMPTY) |
-            ((boards[env][target] >= enemy_pawn) & 
-             (boards[env][target] <= enemy_queen))
+            (boards[target][env] == EMPTY) |
+            ((boards[target][env] >= enemy_pawn) & 
+             (boards[target][env] <= enemy_queen))
         ) // target is empty or enemy
     );
 
-    boards[env][target] = is_action_ok ? player_king : boards[env][target];
-    boards[env][source] = is_action_ok ? EMPTY       : boards[env][source];
-    boards[env][KING_POSITION + players[env] * 2 + 0] = is_action_ok ? tgtrow : boards[env][KING_POSITION + players[env] * 2 + 0];
-    boards[env][KING_POSITION + players[env] * 2 + 1] = is_action_ok ? tgtcol : boards[env][KING_POSITION + players[env] * 2 + 1];
+    boards[target][env] = is_action_ok ? player_king : boards[target][env];
+    boards[source][env] = is_action_ok ? EMPTY       : boards[source][env];
+    boards[KING_POSITION + players[env] * 2 + 0][env] = is_action_ok ? tgtrow : boards[KING_POSITION + players[env] * 2 + 0][env];
+    boards[KING_POSITION + players[env] * 2 + 1][env] = is_action_ok ? tgtcol : boards[KING_POSITION + players[env] * 2 + 1][env];
 
 
     return !is_action_ok;
@@ -58,7 +58,7 @@ __global__ void king_kernel(
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(0)) result[env] = king_move(env, players, boards, actions);
+    if (env < boards.size(1)) result[env] = king_move(env, players, boards, actions);
 }
 
 

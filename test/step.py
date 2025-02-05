@@ -9,7 +9,7 @@ def move(stringboard,turn,rights,mv):
     chessboard = str2chs(stringboard, turn, rights)
     torchboard,torchplayers = chs2pwn(chessboard)
     torchboard = torchboard.to("cuda:0")
-    torchaction = torch.tensor([mv[1]], dtype=torch.int)
+    torchaction = torch.tensor(mv[1], dtype=torch.int).unsqueeze(1)
 
     torch_rew, torch_win = step(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0"))
 
@@ -40,7 +40,7 @@ class Suite(unittest.TestCase):
         torch_rew, torch_win, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(chess_err == 0)
         self.assertTrue(torch_rew[0,0] == 0)
-        self.assertTrue(torch_rew[0,1] == 0)
+        self.assertTrue(torch_rew[1,0] == 0)
         self.assertTrue(torch_win == 0)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 
