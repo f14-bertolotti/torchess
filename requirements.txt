@@ -1,5 +1,6 @@
 jax[cuda12]
 pgx
+click
 chess
 twine
 numpy

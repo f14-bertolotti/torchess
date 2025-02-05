@@ -1,12 +1,11 @@
+import click
 import time
 import chess
 import torch
 from pysrc.utils import chs2pwn
 from torchess import step
 
-
-def main():
-    batch_size = 4096
+def main(batch_size = 4096):
 
     actions = torch.randint(0, 8, (1000, 5, batch_size), device="cuda:0", dtype=torch.int)
     
@@ -23,7 +22,14 @@ def main():
     endtime = time.time() - starttime
  
     print(f"Time taken: {endtime:.5f} seconds")
-    print(f"Average time per step: {endtime/100:.5f} seconds")
+    print(f"Average time per step: {endtime/actions.size(0):.5f} seconds")
+
+    return endtime/actions.size(0)
+
+@click.command()
+@click.option("--batch_size", default=4096, help="Batch size for parallel execution")
+def cli():
+    main()
 
 if __name__ == '__main__':
-    main()
+    cli()
