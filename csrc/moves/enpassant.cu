@@ -4,7 +4,6 @@
 
 __device__ bool enpassant_move(
     size_t env,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions
 ) {
@@ -12,14 +11,14 @@ __device__ bool enpassant_move(
     // returns 0 if the action was performed
     // returns 1 if the action was not applicable
     
-    const unsigned char player_pawn = players[env] * 6 + WHITE_PAWN;
-    const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
+    const unsigned char player_pawn = boards[TURN][env] * 6 + WHITE_PAWN;
+    const unsigned char enemy_pawn  = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_PAWN;
     const unsigned char source = actions[0][env] * 8 + actions[1][env];
     const unsigned char target = actions[2][env] * 8 + actions[3][env];
-    const unsigned char prev_action = WHITE_PREV1 + 10*((players[env]+1)%2);
+    const unsigned char prev_action = WHITE_PREV1 + 10*((boards[TURN][env]+1)%2);
     const unsigned char prev_target = boards[prev_action+2][env] * 8 + boards[prev_action+3][env];
-    const unsigned char enpassant_src_row = players[env] == WHITE ? 3 : 4;
-    const unsigned char enpassant_tgt_row = players[env] == WHITE ? 2 : 5;
+    const unsigned char enpassant_src_row = boards[TURN][env] == WHITE ? 3 : 4;
+    const unsigned char enpassant_tgt_row = boards[TURN][env] == WHITE ? 2 : 5;
 
     const bool is_action_ok = (
         (actions[4][env] == 0                                            ) & // no special action
@@ -44,11 +43,10 @@ __device__ bool enpassant_move(
 __global__ void enpassant_kernel(
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions ,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(1)) result[env] = enpassant_move(env, players, boards, actions);
+    if (env < boards.size(1)) result[env] = enpassant_move(env, boards, actions);
 }
 
 

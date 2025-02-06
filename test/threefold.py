@@ -33,9 +33,9 @@ class Suite(unittest.TestCase):
         ]
     
         chessboard = str2chs(stringboard, turn, rights)
-        torchboard, players = chs2pwn(chessboard)
+        torchboard = chs2pwn(chessboard)
         for action in actions:
-            reward,done = step(torchboard, torch.tensor(action, dtype=torch.int, device="cuda:0").unsqueeze(1), players)
+            reward,done = step(torchboard, torch.tensor(action, dtype=torch.int, device="cuda:0").unsqueeze(1))
         self.assertEqual(reward[0,0].item(), 0.5)
         self.assertEqual(reward[1,0].item(), 0.5)
         self.assertTrue(done[0].item())

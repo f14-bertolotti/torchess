@@ -15,128 +15,117 @@
 #include "step.cu"
 
 
-void kingside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void kingside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     kingside_castle_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void queenside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void queenside_castling(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     queenside_castle_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void promotion(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void promotion(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     promotion_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void pawn(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void pawn(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     pawn_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void knight(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void knight(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     knight_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void king(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void king(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     king_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void rook(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void rook(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     rook_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void bishop(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void bishop(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     bishop_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void queen(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void queen(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     queen_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void doublepush(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void doublepush(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     doublepush_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void enpassant(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor result) {
+void enpassant(torch::Tensor boards, torch::Tensor actions, torch::Tensor result) {
     int threads = 128;
     int blocks = (boards.size(1) + threads - 1) / threads;
     enpassant_kernel<<<blocks, threads>>>(
         boards .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
         actions.packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players.packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result .packed_accessor32<int , 1 , torch::RestrictPtrTraits>()
     );
 }
 
-void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) {
+void attacks(torch::Tensor boards, torch::Tensor result) {
     // The sole purpose of this function is to make sanity cheks and launch the kernel
 
     // assume boards shape is (100, N)
@@ -147,12 +136,9 @@ void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) 
     TORCH_CHECK(result.dim()   == 2 , "Colors tensor must be 2D, (N, 64)");
     TORCH_CHECK(result.size(1) == 64, "First dimension must be 64, found " + std::to_string(result.size(1)));
 
-    // assume players shape is (N)
-    TORCH_CHECK(players.dim() == 1, "Players tensor must be 1D, (N)");
 
     // all tensor must be on gpu
     TORCH_CHECK(boards .is_cuda(),  "boards must be a CUDA tensor");
-    TORCH_CHECK(players.is_cuda(), "players must be a CUDA tensor");
     TORCH_CHECK(result .is_cuda(),  "colors must be a CUDA tensor");
 
     // launch a 64-threads-block for each board
@@ -160,7 +146,6 @@ void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) 
     dim3 blockdim(8, 8);
     attacks_kernel<<<griddim, blockdim>>>(
         boards    .packed_accessor32<int , 2 , torch::RestrictPtrTraits>() ,
-        players   .packed_accessor32<int , 1 , torch::RestrictPtrTraits>() ,
         result    .packed_accessor32<int , 2 , torch::RestrictPtrTraits>()
     );
     cudaDeviceSynchronize();
@@ -170,7 +155,7 @@ void attacks(torch::Tensor boards, torch::Tensor players, torch::Tensor result) 
     if (err != cudaSuccess) throw std::runtime_error(cudaGetErrorString(err));
 }
 
-torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor players, torch::Tensor rewards, torch::Tensor dones) {
+torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor rewards, torch::Tensor dones) {
     // The sole purpose of this function is to check inputs shapes, and launch the kernel
 
     // assume boards shape is (100, N)
@@ -185,9 +170,7 @@ torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor pl
     if (rewards.dim()   != 2) throw std::invalid_argument("Rewards tensor must be 2D, (N)");
     if (rewards.size(0) != 2) throw std::invalid_argument("First dimension must be 2, found " + std::to_string(rewards.size(0)));
 
-    // assume players shape is (N)
     // assume terminated shape is (N)
-    if (players.dim() != 1) throw std::invalid_argument("Players tensor must be 1D, (N)");
     if (dones.dim()   != 1) throw std::invalid_argument("Dones tensor must be 1D, (N)");
 
     // launch the necessary block made of 128 threads
@@ -195,7 +178,6 @@ torch::Tensor step(torch::Tensor boards, torch::Tensor actions, torch::Tensor pl
     int blocks = (boards.size(1) + threads - 1) / threads;
     step_kernel<<<blocks, threads>>>(
         boards    .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
-        players   .packed_accessor32<int   , 1 , torch::RestrictPtrTraits>() ,
         actions   .packed_accessor32<int   , 2 , torch::RestrictPtrTraits>() ,
         rewards   .packed_accessor32<float , 2 , torch::RestrictPtrTraits>() ,
         dones     .packed_accessor32<bool  , 1 , torch::RestrictPtrTraits>()

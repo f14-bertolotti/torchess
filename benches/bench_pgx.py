@@ -30,12 +30,12 @@ def main(batch_size=4096):
         state = step(state, actions[i])
     end_time = time.time() - start_time
     
-    print(f"Time taken: {end_time:.2f} seconds")
-    print(f"Average time per step: {end_time/actions.shape[0]:.5f} seconds")
+    print(f"Time taken: {end_time} seconds")
+    print(f"Average time per step: {end_time/actions.shape[0]} seconds")
     return end_time/actions.shape[0]
 
 @click.command()
-@click.option("--batch_size", default=4096, help="Batch size for parallel execution")
+@click.option("--batch-size", default=4096, help="Batch size for parallel execution")
 def cli(batch_size):
     main(batch_size)
 

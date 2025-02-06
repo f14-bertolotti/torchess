@@ -4,7 +4,6 @@
 
 __device__ bool king_move(
     size_t env,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions
 ) {
@@ -13,11 +12,11 @@ __device__ bool king_move(
     // returns 1 if the action was not applicable
     // this routine does not verify if the king is in check
     
-    const unsigned char player_king = players[env] * 6 + WHITE_KING;
+    const unsigned char player_king = boards[TURN][env] * 6 + WHITE_KING;
     const unsigned char source = actions[0][env] * 8 + actions[1][env];
     const unsigned char target = actions[2][env] * 8 + actions[3][env];
-    const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
-    const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
+    const unsigned char enemy_pawn  = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_PAWN;
+    const unsigned char enemy_queen = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_QUEEN;
     const unsigned char srcrow = actions[0][env];
     const unsigned char srccol = actions[1][env];
     const unsigned char tgtrow = actions[2][env];
@@ -44,8 +43,8 @@ __device__ bool king_move(
 
     boards[target][env] = is_action_ok ? player_king : boards[target][env];
     boards[source][env] = is_action_ok ? EMPTY       : boards[source][env];
-    boards[KING_POSITION + players[env] * 2 + 0][env] = is_action_ok ? tgtrow : boards[KING_POSITION + players[env] * 2 + 0][env];
-    boards[KING_POSITION + players[env] * 2 + 1][env] = is_action_ok ? tgtcol : boards[KING_POSITION + players[env] * 2 + 1][env];
+    boards[KING_POSITION + boards[TURN][env] * 2 + 0][env] = is_action_ok ? tgtrow : boards[KING_POSITION + boards[TURN][env] * 2 + 0][env];
+    boards[KING_POSITION + boards[TURN][env] * 2 + 1][env] = is_action_ok ? tgtcol : boards[KING_POSITION + boards[TURN][env] * 2 + 1][env];
 
 
     return !is_action_ok;
@@ -54,11 +53,10 @@ __device__ bool king_move(
 __global__ void king_kernel(
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions ,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(1)) result[env] = king_move(env, players, boards, actions);
+    if (env < boards.size(1)) result[env] = king_move(env, boards, actions);
 }
 
 

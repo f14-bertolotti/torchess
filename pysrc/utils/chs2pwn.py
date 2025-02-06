@@ -8,7 +8,7 @@ def chs2pwn(chessboard: chess.Board):
     """ given a chess boards returns a torch tensor representation of it """
 
     torch_board = torch.zeros(1, 100, dtype=torch.int)
-    players = torch.tensor([0 if chessboard.turn == chess.WHITE else 1], dtype=torch.int)
+    torch_board[0,96] = 0 if chessboard.turn == chess.WHITE else 1
     for square, piece in chessboard.piece_map().items():
         row = square // 8
         col = square % 8
@@ -45,5 +45,5 @@ def chs2pwn(chessboard: chess.Board):
         torch_board[0, CASTLING_RIGHTS+1] = 0
         torch_board[0, CASTLING_RIGHTS+5] = 0
 
-    return torch_board.transpose(0,1).to("cuda:0"), players.to("cuda:0")
+    return torch_board.transpose(0,1).to("cuda:0")
 

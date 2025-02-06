@@ -5,7 +5,6 @@
 
 __device__ bool queen_move(
     size_t env,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions
 ) {
@@ -14,11 +13,11 @@ __device__ bool queen_move(
     // returns 1 if the action was not applicable
     // this routine does not verify if the queen is in check
     
-    const unsigned char player_queen = players[env] * 6 + WHITE_QUEEN;
+    const unsigned char player_queen = boards[TURN][env] * 6 + WHITE_QUEEN;
     const unsigned char source = actions[0][env] * 8 + actions[1][env];
     const unsigned char target = actions[2][env] * 8 + actions[3][env];
-    const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
-    const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
+    const unsigned char enemy_pawn  = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_PAWN;
+    const unsigned char enemy_queen = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_QUEEN;
     const unsigned char srcrow = actions[0][env];
     const unsigned char srccol = actions[1][env];
     const unsigned char tgtrow = actions[2][env];
@@ -55,11 +54,10 @@ __device__ bool queen_move(
 __global__ void queen_kernel(
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions ,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(1)) result[env] = queen_move(env, players, boards, actions);
+    if (env < boards.size(1)) result[env] = queen_move(env, boards, actions);
 }
 
 

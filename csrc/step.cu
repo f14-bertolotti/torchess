@@ -16,7 +16,6 @@
 
 __global__ void step_kernel(
     torch::PackedTensorAccessor32<int  , 2 , torch::RestrictPtrTraits> boards  ,
-    torch::PackedTensorAccessor32<int  , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int  , 2 , torch::RestrictPtrTraits> actions ,
     torch::PackedTensorAccessor32<float, 2 , torch::RestrictPtrTraits> rewards ,
     torch::PackedTensorAccessor32<bool , 1 , torch::RestrictPtrTraits> dones
@@ -30,15 +29,15 @@ __global__ void step_kernel(
 
         const unsigned char source = actions[0][env] * 8 + actions[1][env];
         const unsigned char target = actions[2][env] * 8 + actions[3][env];
-        const unsigned char prev_action = WHITE_PREV1 + 10*players[env];
-        const unsigned char enemy_pawn = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
-        const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
+        const unsigned char prev_action = WHITE_PREV1 + 10*boards[TURN][env];
+        const unsigned char enemy_pawn = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_PAWN;
+        const unsigned char enemy_queen = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_QUEEN;
 
         const bool pawn_not_moved = (
-            pawn_move       (env, players, boards, actions) &
-            doublepush_move (env, players, boards, actions) &
-            enpassant_move  (env, players, boards, actions) &
-            promotion_move  (env, players, boards, actions)
+            pawn_move       (env, boards, actions) &
+            doublepush_move (env, boards, actions) &
+            enpassant_move  (env, boards, actions) &
+            promotion_move  (env, boards, actions)
         );
 
         const bool not_capturing = (
@@ -59,23 +58,23 @@ __global__ void step_kernel(
         const bool is_action_ok = 
             (((actions[4][env] != 0) | (source != target)) &
             !(
-                kingside_castle_move  ( env, players, boards, actions) &
-                queenside_castle_move ( env, players, boards, actions) &
-                knight_move           ( env, players, boards, actions) &
-                king_move             ( env, players, boards, actions) &
-                rook_move             ( env, players, boards, actions) &
-                bishop_move           ( env, players, boards, actions) &
-                queen_move            ( env, players, boards, actions) &
+                kingside_castle_move  ( env, boards, actions) &
+                queenside_castle_move ( env, boards, actions) &
+                knight_move           ( env, boards, actions) &
+                king_move             ( env, boards, actions) &
+                rook_move             ( env, boards, actions) &
+                bishop_move           ( env, boards, actions) &
+                queen_move            ( env, boards, actions) &
                 pawn_not_moved 
             )
         );
         
         // current player king not attacked
-        const unsigned char king_row = boards[KING_POSITION + players[env] * 2 + 0][env];
-        const unsigned char king_col = boards[KING_POSITION + players[env] * 2 + 1][env];
-        const bool is_king_ok = count_attacks(env, king_row, king_col, players, boards) == 0;
-        const unsigned char player = players[env];
-        const unsigned char enemy  = (players[env] + 1) % 2;
+        const unsigned char king_row = boards[KING_POSITION + boards[TURN][env] * 2 + 0][env];
+        const unsigned char king_col = boards[KING_POSITION + boards[TURN][env] * 2 + 1][env];
+        const bool is_king_ok = count_attacks(env, king_row, king_col, boards) == 0;
+        const unsigned char player = boards[TURN][env];
+        const unsigned char enemy  = (boards[TURN][env] + 1) % 2;
         const bool is_50 = boards[RULE50][env] >= 100;
         const bool is_3fold = boards[THREEFOLD][env] >= 6;
 
@@ -116,7 +115,7 @@ __global__ void step_kernel(
         boards[THREEFOLD][env]     = (boards[THREEFOLD][env] + 1) * is_repetition;
 
         // switch player
-        players[env] = 1 - players[env];
+        boards[TURN][env] = 1 - boards[TURN][env];
     }
 }
 

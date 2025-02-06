@@ -4,7 +4,6 @@
 
 __device__ bool promotion_move(
     size_t env,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions
 ) {
@@ -12,13 +11,13 @@ __device__ bool promotion_move(
     // returns 0 if the action was performed
     // returns 1 if the action was not applicable
     
-    const unsigned char promotion_row = players[env] == WHITE ? 0 : 7;
-    const unsigned char starting_row  = players[env] == WHITE ? 1 : 6;
-    const unsigned char player_pawn = players[env] * 6 + WHITE_PAWN;
+    const unsigned char promotion_row = boards[TURN][env] == WHITE ? 0 : 7;
+    const unsigned char starting_row  = boards[TURN][env] == WHITE ? 1 : 6;
+    const unsigned char player_pawn = boards[TURN][env] * 6 + WHITE_PAWN;
     const unsigned char source = actions[0][env] * 8 + actions[1][env];
     const unsigned char target = actions[2][env] * 8 + actions[3][env];
-    const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
-    const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
+    const unsigned char enemy_pawn  = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_PAWN;
+    const unsigned char enemy_queen = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_QUEEN;
 
     const bool is_action_ok = (
         (actions[4][env] >= PROMOTION_QUEEN & actions[4][env] <= PROMOTION_KNIGHT) & // action is a pawn promotion
@@ -39,10 +38,10 @@ __device__ bool promotion_move(
         ))
     );
 
-    boards[target][env] = (is_action_ok & (actions[4][env] == PROMOTION_QUEEN )) ? players[env] * 6 + WHITE_QUEEN  : boards[target][env];
-    boards[target][env] = (is_action_ok & (actions[4][env] == PROMOTION_KNIGHT)) ? players[env] * 6 + WHITE_KNIGHT : boards[target][env];
-    boards[target][env] = (is_action_ok & (actions[4][env] == PROMOTION_ROOK  )) ? players[env] * 6 + WHITE_ROOK   : boards[target][env];
-    boards[target][env] = (is_action_ok & (actions[4][env] == PROMOTION_BISHOP)) ? players[env] * 6 + WHITE_BISHOP : boards[target][env];
+    boards[target][env] = (is_action_ok & (actions[4][env] == PROMOTION_QUEEN )) ? boards[TURN][env] * 6 + WHITE_QUEEN  : boards[target][env];
+    boards[target][env] = (is_action_ok & (actions[4][env] == PROMOTION_KNIGHT)) ? boards[TURN][env] * 6 + WHITE_KNIGHT : boards[target][env];
+    boards[target][env] = (is_action_ok & (actions[4][env] == PROMOTION_ROOK  )) ? boards[TURN][env] * 6 + WHITE_ROOK   : boards[target][env];
+    boards[target][env] = (is_action_ok & (actions[4][env] == PROMOTION_BISHOP)) ? boards[TURN][env] * 6 + WHITE_BISHOP : boards[target][env];
     boards[source][env] = (is_action_ok) ? EMPTY : boards[source][env];
     
     return !is_action_ok;
@@ -51,11 +50,10 @@ __device__ bool promotion_move(
 __global__ void promotion_kernel(
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions ,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(1)) result[env] = promotion_move(env, players, boards, actions);
+    if (env < boards.size(1)) result[env] = promotion_move(env, boards, actions);
 }
 
 

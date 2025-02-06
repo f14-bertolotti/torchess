@@ -3,7 +3,7 @@ from torch.utils.cpp_extension import CUDAExtension, BuildExtension
 
 setup(
     name='torchess',
-    version='0.0.4',
+    version='0.0.5',
     author='Bertolotti Francesco',
     author_email='f14.bertolotti@gmail.com',
     description='A CUDA chess engine extension for PyTorch',

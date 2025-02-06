@@ -10,7 +10,7 @@ class Suite(unittest.TestCase):
     def rungame(self, moves):
 
         chsboard = chess.Board()
-        tchboard,tchplayer = chs2pwn(chsboard)
+        tchboard = chs2pwn(chsboard)
 
         # play game on both boards
         for i,move in enumerate(moves):
@@ -20,20 +20,20 @@ class Suite(unittest.TestCase):
             pwn = san2pwn(san, chsboard, chsboard.turn).unsqueeze(1)
 
             # advance chess and pawner boards
-            rew,_ = step(tchboard,pwn,tchplayer)
+            rew,_ = step(tchboard,pwn)
             chsboard.push_san(move)
 
             # compare chess and pawner boards
-            self.assertTrue(torch.equal(chs2pwn(chsboard)[0][:64,:], tchboard[:64,:]))
+            self.assertTrue(torch.equal(chs2pwn(chsboard)[:64], tchboard[:64]))
             self.assertTrue(rew[0,0] == 0)
             self.assertTrue(rew[1,0] == 0)
 
         # check no other action is possible
         for pwn_action in pwn_actions():
             pwn = torch.tensor([*pwn_action], dtype=torch.int, device="cuda:0").unsqueeze(-1)
-            rew, _ = step(tchboard.clone(),pwn,tchplayer.clone())
+            rew, _ = step(tchboard.clone(),pwn)
             
-            self.assertTrue(rew[tchplayer[0].item(),0].item() == -1)
+            self.assertTrue(rew[tchboard[96].item(),0].item() == -1)
             
     def test_1(self):
         moves = games[0].split(" ")

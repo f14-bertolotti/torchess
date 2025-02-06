@@ -39,3 +39,4 @@
 #define KING_POSITION 90        // king position
 #define RULE50 94               // 50 move rule
 #define THREEFOLD 95            // threefold repetition 
+#define TURN 96               // player turn

@@ -20,7 +20,7 @@ class Suite(unittest.TestCase):
             chess_board = str2chs(stringboard, turn, rights)
             torch_board = chs2pwn(chess_board)
 
-            torch_err = step(torch_board[0], torch.tensor(pwn_action, dtype=torch.int, device="cuda:0").unsqueeze(1), torch_board[1])[0]
+            torch_err = step(torch_board, torch.tensor(pwn_action, dtype=torch.int, device="cuda:0").unsqueeze(1))[0]
             torch_err = -int(torch_err[0 if turn == chess.WHITE else 1,0].item())
 
             try:
@@ -32,7 +32,7 @@ class Suite(unittest.TestCase):
         
             self.assertEqual(chess_err, torch_err)
             if chess_err == 0:
-                self.assertTrue(torch.equal(chs2pwn(chess_board)[0][0,:64], torch_board[0][0,:64]))
+                self.assertTrue(torch.equal(chs2pwn(chess_board)[:64], torch_board[:64]))
 
             if chess_err == 0: pwn_actions_.append(pwn_action)
             if torch_err == 0: fen_actions.append(fen_action)

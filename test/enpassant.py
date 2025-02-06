@@ -10,16 +10,15 @@ def move(stringboard,turn,rights,mv,prev):
     chess.Move.from_uci(prev[0])
     chessboard.push_uci(prev[0])
 
-    torchboard,torchplayers = chs2pwn(chessboard)
+    torchboard = chs2pwn(chessboard)
     if turn == chess.WHITE:
         torchboard[70:75,:] = torch.tensor(prev[1], dtype=torch.int).unsqueeze(1)
     else:
         torchboard[80:85,:] = torch.tensor(prev[1], dtype=torch.int).unsqueeze(1)
     torchboard = torchboard.to("cuda:0")
     torchaction = torch.tensor(mv[1], dtype=torch.int).unsqueeze(1)
-    torch_err = doublepush(torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
-    torchplayers = torch.tensor([1 if turn == chess.WHITE else 0], dtype=torch.int)
-    torch_err = enpassant (torchboard, torchaction.to("cuda:0"), torchplayers.to("cuda:0")).item()
+    torch_err = doublepush(torchboard, torchaction.to("cuda:0")).item()
+    torch_err = enpassant (torchboard, torchaction.to("cuda:0")).item()
 
     try:
         chess.Move.from_uci(mv[0])
@@ -28,7 +27,7 @@ def move(stringboard,turn,rights,mv,prev):
     except Exception as e:
         chess_err = 1
     
-    return torch_err, chess_err, torchboard[:64,:], chs2pwn(chessboard)[0][:64,:]
+    return torch_err, chess_err, torchboard[:64], chs2pwn(chessboard)[:64]
 
 
 class Suite(unittest.TestCase): 

@@ -17,7 +17,8 @@ def get_random_board(seed):
         piece = rng.choice(pieces)
         color = rng.choice([chess.WHITE, chess.BLACK])
         board.set_piece_at(square, chess.Piece(piece, color))
-    return board, rng.choice([0, 1])
+    board.turn = rng.choice([chess.WHITE, chess.BLACK])
+    return board, board.turn
 
 def attacks_board(chess_board: chess.Board, color: chess.WHITE | chess.BLACK) -> torch.Tensor:
     """ given a chess board and a color returns a tensor with the number of attacks on each square """
@@ -38,9 +39,10 @@ def generate_tests():
         def test_base(self):
             chess_board = chess.Board()
             chess_attacks,attackers = attacks_board(chess_board, chess.BLACK)
-            tensor_board,_ = chs2pwn(chess_board)
+            tensor_board = chs2pwn(chess_board)
             tensor_board = tensor_board.to("cuda:0")
-            pawner_attacks = count_attacks(tensor_board, torch.tensor([0], device="cuda:0", dtype=torch.int))
+            pawner_attacks = count_attacks(tensor_board)
+
 
             self.assertEqual(chess_attacks.tolist(), pawner_attacks.tolist())
 
@@ -57,10 +59,9 @@ def generate_tests():
             """, chess.BLACK
 
             chessboard = str2chs(stringboard,turn,"")
-            tensorboard,tensorplayer = chs2pwn(chessboard)
+            tensorboard = chs2pwn(chessboard)
             tensorboard = tensorboard.to("cuda:0")
-            tensorplayer = tensorplayer.to("cuda:0")
-            pawner_attacks = count_attacks(tensorboard, tensorplayer)
+            pawner_attacks = count_attacks(tensorboard)
             chess_attacks,attackers = attacks_board(chessboard, turn)
 
             self.assertEqual(chess_attacks.tolist(), pawner_attacks.tolist())
@@ -69,12 +70,12 @@ def generate_tests():
     # Dynamically add methods
     for i in range(100):
         def test_template(self, seed=i):
-            chess_board, color = get_random_board(seed)
-            chess_attacks,attackers = attacks_board(chess_board, chess.WHITE if color == 1 else chess.BLACK)
+            chess_board, turn = get_random_board(seed)
+            chess_attacks,attackers = attacks_board(chess_board, chess.BLACK if turn == chess.WHITE else chess.WHITE)
         
-            tensor_board,_ = chs2pwn(chess_board)
+            tensor_board = chs2pwn(chess_board)
             tensor_board = tensor_board.to("cuda:0")
-            pawner_attacks = count_attacks(tensor_board, torch.tensor([color], device="cuda:0", dtype=torch.int))
+            pawner_attacks = count_attacks(tensor_board)
 
             self.assertEqual(chess_attacks.tolist(), pawner_attacks.tolist())
 

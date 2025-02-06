@@ -4,7 +4,6 @@
 
 __device__ bool pawn_move(
     size_t env,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions
 ) {
@@ -12,12 +11,12 @@ __device__ bool pawn_move(
     // returns 0 if the action was performed
     // returns 1 if the action was not applicable
     
-    const unsigned char player_pawn = players[env] * 6 + WHITE_PAWN;
+    const unsigned char player_pawn = boards[TURN][env] * 6 + WHITE_PAWN;
     const unsigned char source = actions[0][env] * 8 + actions[1][env];
     const unsigned char target = actions[2][env] * 8 + actions[3][env];
-    const unsigned char enemy_pawn  = ((players[env] + 1) % 2) * 6 + WHITE_PAWN;
-    const unsigned char enemy_queen = ((players[env] + 1) % 2) * 6 + WHITE_QUEEN;
-    const   signed char ahead = players[env] == WHITE ? -1 : 1;
+    const unsigned char enemy_pawn  = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_PAWN;
+    const unsigned char enemy_queen = ((boards[TURN][env] + 1) % 2) * 6 + WHITE_QUEEN;
+    const   signed char ahead = boards[TURN][env] == WHITE ? -1 : 1;
 
     const bool is_action_ok = (
         (actions[4][env] == 0              ) & // no special action
@@ -48,11 +47,10 @@ __device__ bool pawn_move(
 __global__ void pawn_kernel(
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> boards  ,
     torch::PackedTensorAccessor32<int , 2 , torch::RestrictPtrTraits> actions ,
-    torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> players ,
     torch::PackedTensorAccessor32<int , 1 , torch::RestrictPtrTraits> result
 ) {
     const int env = blockIdx.x * blockDim.x + threadIdx.x;
-    if (env < boards.size(1)) result[env] = pawn_move(env, players, boards, actions);
+    if (env < boards.size(1)) result[env] = pawn_move(env, boards, actions);
 }
 
 
