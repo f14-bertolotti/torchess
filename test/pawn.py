@@ -296,4 +296,20 @@ class Suite(unittest.TestCase):
         self.assertTrue(torch_err == chess_err == 1)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 
+    def test_1(self):
+        stringboard,turn,rights,action = """
+        ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
+        """, chess.WHITE, "KQkq", ("c2a3q",[6, 2, 5, 0, 2])
+
+        torch_err, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
+        self.assertTrue(torch_err == chess_err == 1)
+        self.assertEqual(torch_board.tolist(), chess_board.tolist())
+
 

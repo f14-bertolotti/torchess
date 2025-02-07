@@ -19,8 +19,8 @@ def move(stringboard,turn,rights,mv):
         chess_err = 0
     except Exception as e:
         chess_err = 1
-    
-    return torch_rew, torch_win.item(), chess_err, torchboard[:,:64], chs2pwn(chessboard)[0][:,:64]
+
+    return torch_rew, torch_win.item(), chess_err, torchboard[:64], chs2pwn(chessboard)[:64]
 
 
 class Suite(unittest.TestCase): 
@@ -60,7 +60,7 @@ class Suite(unittest.TestCase):
         torch_rew, torch_win, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(chess_err == 1)
         self.assertTrue(torch_rew[0,0] == -1)
-        self.assertTrue(torch_rew[0,1] == 0)
+        self.assertTrue(torch_rew[1,0] == 0)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 
 
@@ -80,7 +80,23 @@ class Suite(unittest.TestCase):
         torch_rew, torch_win, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
         self.assertTrue(chess_err == 0)
         self.assertTrue(torch_rew[0,0] == 0)
-        self.assertTrue(torch_rew[0,1] == 0)
+        self.assertTrue(torch_rew[1,0] == 0)
         self.assertEqual(torch_board.tolist(), chess_board.tolist())
 
-  
+    def test_3(self):
+        stringboard,turn,rights,action = """
+        ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘ ⭘
+        ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        ♖ ♘ ♗ ♕ ♔ ⭘ ⭘ ♖
+        """, chess.WHITE, "KQkq", ("c2a3q",[6, 2, 5, 0, 2])
+
+        torch_rew, torch_win, chess_err, torch_board, chess_board = move(stringboard,turn,rights,action)
+        self.assertTrue(chess_err == 1)
+        self.assertTrue(torch_rew[0,0] == -1)
+        self.assertTrue(torch_rew[1,0] == 0)
+        self.assertEqual(torch_board.tolist(), chess_board.tolist())
