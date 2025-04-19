@@ -1,6 +1,7 @@
 import unittest
 import chess
 import torch
+import pickle
 
 from pysrc.pawner import step
 from pysrc.utils import parse_game, games, chs2pwn
@@ -9,7 +10,7 @@ class Suite(unittest.TestCase):
 
     def test_0(self):
 
-        moves = [parse_game(game) for game in games] * 10
+        moves = [parse_game(game) for game in games] * 1
         lens  = torch.tensor([len(move) for move in moves]).to("cuda:0")
         moves = torch.nn.utils.rnn.pad_sequence(moves, batch_first=True)
         moves = torch.cat([moves, torch.zeros((moves.size(0),1,5), dtype=torch.int, device="cuda:0")], dim=1).permute(2,1,0)
@@ -17,14 +18,23 @@ class Suite(unittest.TestCase):
         board = chs2pwn(chess.Board())
         board = board.repeat(1,moves.size(2))
 
-        donestack, rewardstack, dones = [], [], None
+        donestack, rewardstack, boardstack, movestack, dones = [], [], [], [], None
         for i in range(moves.size(1)):
+            boardstack.append(board.clone())
+            movestack.append(moves[:,i].clone())
             rewards, dones = step(board, moves[:,i], dones)
             donestack.append(dones.clone())
             rewardstack.append(rewards.clone())
 
-        donestack = torch.stack(donestack)
+
+        donestack   = torch.stack(donestack)
         rewardstack = torch.stack(rewardstack)
+        boardstack  = torch.stack(boardstack)
+        movestack   = torch.stack(movestack)
+
+        with open("batch.pkl", "wb") as f:
+            pickle.dump((boardstack.permute(2,0,1), movestack.permute(2,0,1), rewardstack.permute(2,0,1), donestack.permute(1,0)), f)
+
 
         self.assertTrue(torch.equal(donestack.logical_not().int().sum(0), lens))
         self.assertTrue(rewardstack.sum(0).sum() == 0)
